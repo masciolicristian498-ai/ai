@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import type {
   Professor,
   StudyMaterial,
@@ -9,13 +10,25 @@ import type {
   OnboardingData,
   UserProgress,
   ExamSimulation,
+  ChatMessage,
 } from '@/types';
 
-// Simple client-side store using React state
-// In production, this would be backed by a database
+export type AppView =
+  | 'home'
+  | 'chat'
+  | 'create-professor'
+  | 'notebook'
+  | 'progress'
+  | 'upload'
+  | 'study-plan'
+  | 'exam'
+  | 'dashboard'
+  | 'onboarding'
+  | 'professor';
 
 export interface AppState {
   professors: Professor[];
+  selectedProfessorId: string | null;
   materials: StudyMaterial[];
   studyPlans: StudyPlan[];
   exams: Exam[];
@@ -24,25 +37,26 @@ export interface AppState {
   onboardingData: OnboardingData | null;
   userProgress: UserProgress;
   sidebarOpen: boolean;
-  currentView: 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress' | 'notebook';
+  currentView: AppView;
 }
 
 const defaultProgress: UserProgress = {
-  totalExams: 3,
-  passedExams: 2,
-  averageGrade: 26.5,
-  studyStreak: 7,
-  totalHoursStudied: 142,
-  weeklyHours: [4, 5, 3, 6, 4, 2, 5],
-  topicsCompleted: 48,
-  simulationsCompleted: 12,
-  averageSimulationScore: 78,
-  strongAreas: ['Diritto Privato', 'Microeconomia', 'Statistica descrittiva'],
-  weakAreas: ['Macroeconomia avanzata', 'Diritto Costituzionale comparato'],
+  totalExams: 0,
+  passedExams: 0,
+  averageGrade: 0,
+  studyStreak: 0,
+  totalHoursStudied: 0,
+  weeklyHours: [0, 0, 0, 0, 0, 0, 0],
+  topicsCompleted: 0,
+  simulationsCompleted: 0,
+  averageSimulationScore: 0,
+  strongAreas: [],
+  weakAreas: [],
 };
 
 const initialState: AppState = {
   professors: [],
+  selectedProfessorId: null,
   materials: [],
   studyPlans: [],
   exams: [],
@@ -51,13 +65,61 @@ const initialState: AppState = {
   onboardingData: null,
   userProgress: defaultProgress,
   sidebarOpen: true,
-  currentView: 'dashboard' as AppState['currentView'],
+  currentView: 'home',
 };
 
-export function useAppStore() {
-  const [state, setState] = useState<AppState>(initialState);
+const STORAGE_KEY = 'studyai-v2';
 
-  const setView = useCallback((view: AppState['currentView']) => {
+function loadFromStorage(): Partial<AppState> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return {
+      professors: parsed.professors || [],
+      materials: parsed.materials || [],
+      studyPlans: parsed.studyPlans || [],
+      exams: parsed.exams || [],
+      simulations: parsed.simulations || [],
+      userProgress: { ...defaultProgress, ...(parsed.userProgress || {}) },
+      onboardingData: parsed.onboardingData || null,
+    };
+  } catch {
+    return {};
+  }
+}
+
+function saveToStorage(state: AppState) {
+  if (typeof window === 'undefined') return;
+  try {
+    const toSave = {
+      professors: state.professors,
+      materials: state.materials,
+      studyPlans: state.studyPlans,
+      exams: state.exams,
+      simulations: state.simulations,
+      userProgress: state.userProgress,
+      onboardingData: state.onboardingData,
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  } catch {
+    // storage quota exceeded or unavailable
+  }
+}
+
+export function useAppStore() {
+  const [state, setState] = useState<AppState>(() => {
+    const saved = loadFromStorage();
+    return { ...initialState, ...saved };
+  });
+
+  // Persist to localStorage whenever state changes
+  useEffect(() => {
+    saveToStorage(state);
+  }, [state]);
+
+  const setView = useCallback((view: AppView) => {
     setState((prev) => ({ ...prev, currentView: view }));
   }, []);
 
@@ -65,32 +127,64 @@ export function useAppStore() {
     setState((prev) => ({ ...prev, sidebarOpen: !prev.sidebarOpen }));
   }, []);
 
+  const selectProfessor = useCallback((id: string | null) => {
+    setState((prev) => ({ ...prev, selectedProfessorId: id, currentView: id ? 'chat' : 'home' }));
+  }, []);
+
   const addProfessor = useCallback((professor: Professor) => {
-    setState((prev) => ({
-      ...prev,
-      professors: [...prev.professors, professor],
-    }));
+    setState((prev) => {
+      const exists = prev.professors.find((p) => p.id === professor.id);
+      const professors = exists
+        ? prev.professors.map((p) => (p.id === professor.id ? professor : p))
+        : [...prev.professors, professor];
+      return { ...prev, professors };
+    });
   }, []);
 
   const updateProfessor = useCallback((id: string, updates: Partial<Professor>) => {
     setState((prev) => ({
       ...prev,
-      professors: prev.professors.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+      professors: prev.professors.map((p) => (p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p)),
+    }));
+  }, []);
+
+  const deleteProfessor = useCallback((id: string) => {
+    setState((prev) => ({
+      ...prev,
+      professors: prev.professors.filter((p) => p.id !== id),
+      selectedProfessorId: prev.selectedProfessorId === id ? null : prev.selectedProfessorId,
+      currentView: prev.selectedProfessorId === id ? 'home' : prev.currentView,
+    }));
+  }, []);
+
+  const addChatMessage = useCallback((professorId: string, message: Omit<ChatMessage, 'id'>) => {
+    const newMsg: ChatMessage = { ...message, id: uuidv4() };
+    setState((prev) => ({
+      ...prev,
+      professors: prev.professors.map((p) =>
+        p.id === professorId
+          ? { ...p, chatHistory: [...(p.chatHistory || []), newMsg] }
+          : p
+      ),
+    }));
+    return newMsg;
+  }, []);
+
+  const clearChatHistory = useCallback((professorId: string) => {
+    setState((prev) => ({
+      ...prev,
+      professors: prev.professors.map((p) =>
+        p.id === professorId ? { ...p, chatHistory: [] } : p
+      ),
     }));
   }, []);
 
   const addMaterial = useCallback((material: StudyMaterial) => {
-    setState((prev) => ({
-      ...prev,
-      materials: [...prev.materials, material],
-    }));
+    setState((prev) => ({ ...prev, materials: [...prev.materials, material] }));
   }, []);
 
   const removeMaterial = useCallback((id: string) => {
-    setState((prev) => ({
-      ...prev,
-      materials: prev.materials.filter((m) => m.id !== id),
-    }));
+    setState((prev) => ({ ...prev, materials: prev.materials.filter((m) => m.id !== id) }));
   }, []);
 
   const setStudyPlan = useCallback((plan: StudyPlan) => {
@@ -129,18 +223,22 @@ export function useAppStore() {
   }, []);
 
   const addSimulation = useCallback((sim: ExamSimulation) => {
-    setState((prev) => ({
-      ...prev,
-      simulations: [...prev.simulations, sim],
-    }));
+    setState((prev) => ({ ...prev, simulations: [...prev.simulations, sim] }));
   }, []);
+
+  const selectedProfessor = state.professors.find((p) => p.id === state.selectedProfessorId) || null;
 
   return {
     state,
+    selectedProfessor,
     setView,
     toggleSidebar,
+    selectProfessor,
     addProfessor,
     updateProfessor,
+    deleteProfessor,
+    addChatMessage,
+    clearChatHistory,
     addMaterial,
     removeMaterial,
     setStudyPlan,

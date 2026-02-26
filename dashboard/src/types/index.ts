@@ -2,6 +2,13 @@
 // CORE TYPES - StudyAI Platform
 // ==========================================
 
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'professor';
+  content: string;
+  timestamp: string;
+}
+
 export interface University {
   id: string;
   name: string;
@@ -12,6 +19,12 @@ export interface University {
 export interface Professor {
   id: string;
   name: string;
+  subject?: string;        // materia / corso
+  emoji?: string;          // avatar emoji (es. "⚖️")
+  color?: string;          // colore accent hex (es. "#6c5ce7")
+  examDate?: string;       // data esame ISO
+  targetGrade?: number;    // voto obiettivo 18-30
+  chatHistory?: ChatMessage[]; // storico chat con il prof
   universityId: string;
   department: string;
   examStyle: ExamStyle;
@@ -26,9 +39,9 @@ export interface Professor {
 }
 
 export interface ExamStyle {
-  oralWeight: number; // 0-100 percentage
-  writtenWeight: number; // 0-100 percentage
-  practicalWeight: number; // 0-100 percentage
+  oralWeight: number;
+  writtenWeight: number;
+  practicalWeight: number;
   multipleChoice: boolean;
   openQuestions: boolean;
   exercises: boolean;
@@ -70,9 +83,9 @@ export interface Exam {
   id: string;
   courseId: string;
   professorId: string;
-  date: string; // ISO date
+  date: string;
   daysRemaining: number;
-  targetGrade: number; // 18-30
+  targetGrade: number;
   status: 'da_preparare' | 'in_preparazione' | 'pronto' | 'sostenuto';
   result?: number;
   passed?: boolean;
@@ -114,7 +127,7 @@ export interface StudyPhase {
   startDay: number;
   endDay: number;
   type: 'comprensione' | 'approfondimento' | 'pratica' | 'ripasso' | 'simulazione';
-  weight: number; // percentage of total time
+  weight: number;
   topics: string[];
   completed: boolean;
 }
@@ -139,7 +152,7 @@ export interface TaskItem {
   materialRef?: string;
   chapter?: string;
   pages?: string;
-  duration: number; // minutes
+  duration: number;
   completed: boolean;
   priority: 'alta' | 'media' | 'bassa';
 }
@@ -200,3 +213,17 @@ export interface OnboardingData {
   year: number;
   semester: 1 | 2;
 }
+
+// Colori disponibili per i professori
+export const PROFESSOR_COLORS = [
+  { id: 'purple', hex: '#6c5ce7', name: 'Viola' },
+  { id: 'teal', hex: '#00cec9', name: 'Acqua' },
+  { id: 'green', hex: '#00b894', name: 'Verde' },
+  { id: 'orange', hex: '#e17055', name: 'Arancione' },
+  { id: 'pink', hex: '#fd79a8', name: 'Rosa' },
+  { id: 'blue', hex: '#0984e3', name: 'Blu' },
+  { id: 'yellow', hex: '#fdcb6e', name: 'Giallo' },
+  { id: 'red', hex: '#d63031', name: 'Rosso' },
+] as const;
+
+export const SUBJECT_EMOJIS = ['🎓', '⚖️', '📊', '🧮', '📐', '⚡', '🧪', '🔬', '💻', '📜', '📚', '🧠', '🩺', '⚙️', '🧘', '🌍', '🏛️', '💰', '🎯', '📖', '🔭', '🌿', '🏗️', '✈️'];
