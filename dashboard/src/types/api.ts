@@ -240,3 +240,68 @@ export interface ExamSimulationAIResponse {
   examTips: string[];
   generatedAt: string;
 }
+
+// ---------- REPORT ----------
+
+export interface ReportRequest {
+  topic: string;
+  context?: string;
+  /** Tipo: 'saggio' | 'relazione' | 'analisi' | 'riassunto' */
+  reportType?: 'saggio' | 'relazione' | 'analisi' | 'riassunto';
+  /** Lunghezza: 'breve' (~500 parole) | 'medio' (~1000) | 'lungo' (~2000) */
+  length?: 'breve' | 'medio' | 'lungo';
+  language?: string;
+}
+
+export interface ReportSection {
+  id: string;
+  title: string;
+  content: string;
+  keyPoints?: string[];
+  level: 1 | 2; // 1 = sezione principale, 2 = sottosezione
+}
+
+export interface ReportResponse {
+  title: string;
+  abstract: string;
+  reportType: string;
+  sections: ReportSection[];
+  bibliography: string[];
+  wordCount: number;
+  generatedAt: string;
+}
+
+// ---------- VIDEO SCRIPT ----------
+
+export interface VideoScriptRequest {
+  topic: string;
+  context?: string;
+  /** Durata in minuti: 3 | 5 | 10 */
+  durationMinutes?: 3 | 5 | 10;
+  /** Stile: 'divulgativo' | 'accademico' | 'storytelling' */
+  style?: 'divulgativo' | 'accademico' | 'storytelling';
+  language?: string;
+}
+
+export interface VideoScene {
+  id: string;
+  sceneNumber: number;
+  title: string;
+  narration: string;
+  visuals: string;
+  durationSeconds: number;
+  keyPoints?: string[];
+  transition?: string;
+}
+
+export interface VideoScriptResponse {
+  title: string;
+  topic: string;
+  style: string;
+  totalDurationSeconds: number;
+  hook: string;
+  scenes: VideoScene[];
+  closingLine: string;
+  productionNotes: string[];
+  generatedAt: string;
+}

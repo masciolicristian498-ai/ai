@@ -13,6 +13,10 @@ import type {
   MindMapResponse,
   TableRequest,
   TableResponse,
+  ReportRequest,
+  ReportResponse,
+  VideoScriptRequest,
+  VideoScriptResponse,
   PresentationRequest,
   PresentationResponse,
   StudyPlanAIRequest,
@@ -136,4 +140,28 @@ export async function generateExamSimulation(
   req: ExamSimulationAIRequest
 ): Promise<ExamSimulationAIResponse> {
   return post<ExamSimulationAIRequest, ExamSimulationAIResponse>('exam-simulation', req);
+}
+
+// ---------- REPORT ----------
+
+/**
+ * Genera un report accademico strutturato su un argomento.
+ * @example
+ * const result = await generateReport({ topic: 'Il contratto di locazione', reportType: 'analisi', length: 'medio' });
+ * result.sections.forEach(s => console.log(s.title, s.content));
+ */
+export async function generateReport(req: ReportRequest): Promise<ReportResponse> {
+  return post<ReportRequest, ReportResponse>('report', req);
+}
+
+// ---------- VIDEO SCRIPT ----------
+
+/**
+ * Genera uno script/storyboard per un video di panoramica su un argomento.
+ * @example
+ * const result = await generateVideoScript({ topic: 'Reti neurali', durationMinutes: 5, style: 'divulgativo' });
+ * result.scenes.forEach(s => console.log(s.sceneNumber, s.narration));
+ */
+export async function generateVideoScript(req: VideoScriptRequest): Promise<VideoScriptResponse> {
+  return post<VideoScriptRequest, VideoScriptResponse>('video-script', req);
 }

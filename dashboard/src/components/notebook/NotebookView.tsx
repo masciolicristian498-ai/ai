@@ -2,14 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Brain, Network, Table2, Monitor } from 'lucide-react';
+import { Layers, Brain, Network, Table2, Monitor, FileText, Video } from 'lucide-react';
 import FlashcardsTab from './FlashcardsTab';
 import QuizTab from './QuizTab';
 import MindMapTab from './MindMapTab';
 import TableTab from './TableTab';
 import PresentationTab from './PresentationTab';
+import ReportTab from './ReportTab';
+import VideoScriptTab from './VideoScriptTab';
 
-type NotebookTab = 'flashcards' | 'quiz' | 'mindmap' | 'table' | 'presentation';
+type NotebookTab = 'flashcards' | 'quiz' | 'mindmap' | 'table' | 'presentation' | 'report' | 'video';
 
 const tabs: {
   id: NotebookTab;
@@ -23,6 +25,8 @@ const tabs: {
   { id: 'mindmap', label: 'Mappa Mentale', icon: Network, color: '#0984e3', description: 'Visualizza i concetti' },
   { id: 'table', label: 'Tabella', icon: Table2, color: '#e17055', description: 'Organizza e confronta' },
   { id: 'presentation', label: 'Presentazione', icon: Monitor, color: '#fd79a8', description: 'Studia per slide' },
+  { id: 'report', label: 'Report', icon: FileText, color: '#a29bfe', description: 'Saggio / Analisi / Relazione' },
+  { id: 'video', label: 'Overview Video', icon: Video, color: '#00cec9', description: 'Script e storyboard video' },
 ];
 
 const containerVariants = {
@@ -116,6 +120,8 @@ export default function NotebookView() {
             {activeTab === 'mindmap' && <MindMapTab />}
             {activeTab === 'table' && <TableTab />}
             {activeTab === 'presentation' && <PresentationTab />}
+            {activeTab === 'report' && <ReportTab />}
+            {activeTab === 'video' && <VideoScriptTab />}
           </motion.div>
         </AnimatePresence>
       </motion.div>
