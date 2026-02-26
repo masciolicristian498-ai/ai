@@ -14,7 +14,6 @@ export default function RootLayout({
   return (
     <html lang="it">
       <body className="font-sans antialiased">
-        <div className="mesh-gradient" />
         {children}
       </body>
     </html>
