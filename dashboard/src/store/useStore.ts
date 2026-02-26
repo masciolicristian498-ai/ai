@@ -24,7 +24,7 @@ export interface AppState {
   onboardingData: OnboardingData | null;
   userProgress: UserProgress;
   sidebarOpen: boolean;
-  currentView: 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress';
+  currentView: 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress' | 'notebook';
 }
 
 const defaultProgress: UserProgress = {
@@ -51,7 +51,7 @@ const initialState: AppState = {
   onboardingData: null,
   userProgress: defaultProgress,
   sidebarOpen: true,
-  currentView: 'dashboard',
+  currentView: 'dashboard' as AppState['currentView'],
 };
 
 export function useAppStore() {

@@ -13,9 +13,10 @@ import {
   ChevronRight,
   Sparkles,
   Zap,
+  BookMarked,
 } from 'lucide-react';
 
-type View = 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress';
+type View = 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress' | 'notebook';
 
 interface SidebarProps {
   currentView: View;
@@ -31,6 +32,7 @@ const navItems: { id: View; label: string; icon: React.ElementType; description:
   { id: 'upload', label: 'Materiali', icon: Upload, description: 'Carica file' },
   { id: 'study-plan', label: 'Piano Studio', icon: CalendarClock, description: 'Piano giornaliero' },
   { id: 'exam', label: 'Simulazione', icon: FileQuestion, description: "Simula l'esame" },
+  { id: 'notebook', label: 'Notebook AI', icon: BookMarked, description: 'Flashcard, Quiz, Mappe' },
   { id: 'progress', label: 'Progressi', icon: BarChart3, description: 'Statistiche' },
 ];
 

@@ -11,6 +11,7 @@ import UploadView from '@/components/upload/UploadView';
 import StudyPlanView from '@/components/study-plan/StudyPlanView';
 import ExamSimulatorView from '@/components/exam-simulator/ExamSimulatorView';
 import ProgressView from '@/components/progress/ProgressView';
+import NotebookView from '@/components/notebook/NotebookView';
 import { useAppStore } from '@/store/useStore';
 import { generateStudyPlan, generateExamSimulation } from '@/lib/algorithm';
 import type { OnboardingData, Professor } from '@/types';
@@ -148,6 +149,8 @@ export default function Home() {
             onNavigate={(v) => setView(v as typeof state.currentView)}
           />
         );
+      case 'notebook':
+        return <NotebookView />;
       case 'progress':
         return <ProgressView progress={state.userProgress} />;
       default:
