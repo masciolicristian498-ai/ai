@@ -2,21 +2,25 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, Sparkles, RefreshCw, CheckCircle2, XCircle, Trophy } from 'lucide-react';
+import { Sparkles, RefreshCw, CheckCircle2, XCircle, Trophy } from 'lucide-react';
 import { generateQuiz } from '@/lib/api-client';
 import type { QuizQuestion } from '@/types/api';
 
 type Phase = 'setup' | 'quiz' | 'results';
 
-export default function QuizTab() {
+interface QuizTabProps {
+  accentColor?: string;
+  accentGradient?: string;
+}
+
+export default function QuizTab({
+  accentColor = '#10b981',
+  accentGradient = 'linear-gradient(135deg,#047857,#10b981)',
+}: QuizTabProps) {
   const [topic, setTopic] = useState('');
   const [questionCount, setQuestionCount] = useState(5);
   const [difficulty, setDifficulty] = useState<'base' | 'medio' | 'avanzato'>('medio');
-  const [types, setTypes] = useState<('multipla' | 'vera_falsa' | 'aperta')[]>([
-    'multipla',
-    'vera_falsa',
-    'aperta',
-  ]);
+  const [types, setTypes] = useState<('multipla' | 'vera_falsa' | 'aperta')[]>(['multipla', 'vera_falsa', 'aperta']);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [questions, setQuestions] = useState<QuizQuestion[]>([]);
@@ -26,11 +30,8 @@ export default function QuizTab() {
   const [submitted, setSubmitted] = useState<Record<string, boolean>>({});
   const [phase, setPhase] = useState<Phase>('setup');
 
-  const toggleType = (t: 'multipla' | 'vera_falsa' | 'aperta') => {
-    setTypes((prev) =>
-      prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
-    );
-  };
+  const toggleType = (t: 'multipla' | 'vera_falsa' | 'aperta') =>
+    setTypes((prev) => prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]);
 
   const handleGenerate = async () => {
     if (!topic.trim() || types.length === 0) return;
@@ -51,70 +52,72 @@ export default function QuizTab() {
     }
   };
 
-  const handleSubmit = (qId: string) => {
-    setSubmitted((prev) => ({ ...prev, [qId]: true }));
-  };
-
+  const handleSubmit = (qId: string) => setSubmitted((prev) => ({ ...prev, [qId]: true }));
   const handleNext = () => {
-    if (currentQ < questions.length - 1) {
-      setCurrentQ((i) => i + 1);
-    } else {
-      setPhase('results');
-    }
+    if (currentQ < questions.length - 1) setCurrentQ((i) => i + 1);
+    else setPhase('results');
   };
 
   const computeScore = () =>
     questions.reduce((score, q) => {
       if (!submitted[q.id]) return score;
       const answer = userAnswers[q.id] || '';
-      if (q.type !== 'aperta') {
-        return score + (answer === q.correctAnswer ? (q.points || 1) : 0);
-      }
-      // For open questions: give partial credit if they wrote something meaningful
+      if (q.type !== 'aperta') return score + (answer === q.correctAnswer ? (q.points || 1) : 0);
       return score + (answer.trim().length > 15 ? Math.floor((q.points || 3) / 2) : 0);
     }, 0);
 
-  // ---- RESULTS ----
+  const difficultyColors = { base: '#4ade80', medio: accentColor, avanzato: '#f87171' };
+
+  // RESULTS
   if (phase === 'results') {
     const score = computeScore();
     const pct = totalPoints > 0 ? Math.round((score / totalPoints) * 100) : 0;
-    const grade =
-      pct >= 90 ? '30L' : pct >= 80 ? '29–30' : pct >= 70 ? '27–28' : pct >= 60 ? '24–26' : pct >= 50 ? '21–23' : '< 21';
-    const emoji =
-      pct >= 70 ? '🎉 Ottimo risultato!' : pct >= 50 ? '📚 Buono, continua a ripassare.' : '💪 Riprova dopo un altro ripasso!';
+    const grade = pct >= 90 ? '30L' : pct >= 80 ? '29–30' : pct >= 70 ? '27–28' : pct >= 60 ? '24–26' : pct >= 50 ? '21–23' : '< 21';
+    const emoji = pct >= 70 ? '🎉 Ottimo!' : pct >= 50 ? '📚 Buono, continua.' : '💪 Riprova!';
+    const gradeColor = pct >= 70 ? '#4ade80' : pct >= 50 ? accentColor : '#f87171';
 
     return (
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="glass-card p-10 text-center space-y-6"
+        className="rounded-2xl p-10 text-center space-y-6"
+        style={{ background: '#0d1220', border: `1px solid ${accentColor}28` }}
       >
-        <Trophy size={52} className="mx-auto text-yellow-400" />
+        <div
+          className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto"
+          style={{ background: `${gradeColor}18`, border: `1px solid ${gradeColor}30` }}
+        >
+          <Trophy size={40} style={{ color: gradeColor }} />
+        </div>
         <div>
-          <h2 className="text-3xl font-bold gradient-text">{pct}%</h2>
-          <p className="text-text-muted text-sm mt-1">
-            {score} / {totalPoints} punti · voto stimato: <strong className="text-text-primary">{grade}</strong>
+          <h2 className="text-5xl font-black mb-1" style={{ color: gradeColor }}>{pct}%</h2>
+          <p className="text-sm" style={{ color: '#8899b0' }}>
+            {score} / {totalPoints} punti · voto stimato:{' '}
+            <strong style={{ color: '#e2e8f0' }}>{grade}</strong>
           </p>
         </div>
-        <div className="h-3 bg-bg-card rounded-full overflow-hidden max-w-xs mx-auto">
+        <div className="h-3 rounded-full overflow-hidden max-w-xs mx-auto" style={{ background: 'rgba(255,255,255,0.06)' }}>
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-[#00b894] to-accent"
+            className="h-full rounded-full"
+            style={{ background: `linear-gradient(90deg,${gradeColor},${gradeColor}88)`, boxShadow: `0 0 12px ${gradeColor}` }}
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
           />
         </div>
-        <p className="text-text-secondary text-sm">{emoji}</p>
+        <p className="text-base font-semibold" style={{ color: '#e2e8f0' }}>{emoji}</p>
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => { setPhase('setup'); setQuestions([]); }}
-            className="px-5 py-2.5 rounded-xl bg-bg-card border border-border text-sm text-text-secondary hover:text-text-primary transition-colors"
+            className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
+            style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }}
           >
             Nuovo Quiz
           </button>
           <button
             onClick={() => { setCurrentQ(0); setSubmitted({}); setUserAnswers({}); setPhase('quiz'); }}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#00b894] to-[#00cec9] text-white text-sm font-semibold"
+            className="px-5 py-2.5 rounded-xl text-white text-sm font-bold"
+            style={{ background: accentGradient, boxShadow: `0 4px 16px ${accentColor}40` }}
           >
             Riprova
           </button>
@@ -123,56 +126,57 @@ export default function QuizTab() {
     );
   }
 
-  // ---- SETUP ----
+  // SETUP
   if (phase === 'setup') {
     return (
-      <div className="glass-card p-6 space-y-4">
-        <div className="flex items-center gap-2 mb-1">
-          <Brain size={18} className="text-[#00b894]" />
-          <h2 className="font-semibold text-text-primary">Genera Quiz</h2>
-        </div>
-
+      <div className="rounded-2xl p-6 space-y-5" style={{ background: '#0d1220', border: `1px solid ${accentColor}28` }}>
         <div>
-          <label className="text-xs text-text-muted mb-1 block">Argomento *</label>
+          <label className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: accentColor }}>
+            Argomento
+          </label>
           <input
             type="text"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             placeholder="es. Teoria dei giochi, Diritto Penale, Matematica discreta..."
-            className="w-full bg-bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+            className="w-full rounded-xl px-4 py-3.5 text-sm"
+            style={{ background: '#111827', border: `1px solid ${accentColor}30`, color: '#e2e8f0', outline: 'none' }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; e.currentTarget.style.boxShadow = `0 0 0 3px ${accentColor}18`; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = `${accentColor}30`; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
 
-        <div className="flex gap-6 flex-wrap items-end">
-          <div className="flex-1 min-w-[150px]">
-            <label className="text-xs text-text-muted mb-1 block">Domande: {questionCount}</label>
+        <div className="flex gap-5 flex-wrap items-end">
+          <div className="flex-1 min-w-[160px]">
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>
+              Domande: <span style={{ color: accentColor }} className="font-bold">{questionCount}</span>
+            </label>
             <input
-              type="range"
-              min={3}
-              max={15}
-              step={1}
+              type="range" min={3} max={15} step={1}
               value={questionCount}
               onChange={(e) => setQuestionCount(Number(e.target.value))}
-              className="w-full accent-[#00b894]"
+              className="w-full cursor-pointer"
+              style={{ accentColor }}
             />
-            <div className="flex justify-between text-[10px] text-text-muted mt-0.5">
+            <div className="flex justify-between text-[10px] mt-1" style={{ color: '#4a5568' }}>
               <span>3</span><span>15</span>
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-text-muted mb-1 block">Difficoltà</label>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>Difficoltà</label>
             <div className="flex gap-1.5">
               {(['base', 'medio', 'avanzato'] as const).map((d) => (
                 <button
                   key={d}
                   onClick={() => setDifficulty(d)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                  style={
                     difficulty === d
-                      ? 'bg-[#00b894] text-white'
-                      : 'bg-bg-card border border-border text-text-secondary hover:text-text-primary'
-                  }`}
+                      ? { background: difficultyColors[d], color: '#000', boxShadow: `0 2px 12px ${difficultyColors[d]}55` }
+                      : { background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }
+                  }
                 >
                   {d.charAt(0).toUpperCase() + d.slice(1)}
                 </button>
@@ -182,41 +186,50 @@ export default function QuizTab() {
         </div>
 
         <div>
-          <label className="text-xs text-text-muted mb-2 block">Tipi di domanda</label>
+          <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>Tipi di domanda</label>
           <div className="flex gap-2 flex-wrap">
             {(['multipla', 'vera_falsa', 'aperta'] as const).map((t) => (
               <button
                 key={t}
                 onClick={() => toggleType(t)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all border ${
+                className="px-3 py-2 rounded-xl text-xs font-bold transition-all border"
+                style={
                   types.includes(t)
-                    ? 'bg-[#00b894]/15 border-[#00b894]/50 text-[#00b894]'
-                    : 'bg-bg-card border-border text-text-muted hover:text-text-secondary'
-                }`}
+                    ? { background: `${accentColor}18`, borderColor: `${accentColor}50`, color: accentColor }
+                    : { background: '#111827', borderColor: 'rgba(255,255,255,0.08)', color: '#4a5568' }
+                }
               >
-                {t === 'multipla' ? 'Scelta multipla' : t === 'vera_falsa' ? 'Vero / Falso' : 'Risposta aperta'}
+                {t === 'multipla' ? '◉ Scelta multipla' : t === 'vera_falsa' ? '◎ Vero / Falso' : '✏ Risposta aperta'}
               </button>
             ))}
           </div>
         </div>
 
-        <button
+        <motion.button
           onClick={handleGenerate}
           disabled={!topic.trim() || loading || types.length === 0}
-          className="w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-[#00b894] to-[#00cec9] text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: 1.01, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ background: accentGradient, color: '#fff', boxShadow: loading ? 'none' : `0 4px 20px ${accentColor}40` }}
         >
           {loading ? (
             <><RefreshCw size={16} className="animate-spin" /> Gemini sta generando...</>
           ) : (
             <><Sparkles size={16} /> Genera {questionCount} Domande</>
           )}
-        </button>
-        {error && <p className="text-red-400 text-xs">{error}</p>}
+        </motion.button>
+
+        {error && (
+          <p className="text-xs px-3 py-2 rounded-lg" style={{ background: 'rgba(248,113,113,0.1)', color: '#f87171', border: '1px solid rgba(248,113,113,0.2)' }}>
+            ⚠ {error}
+          </p>
+        )}
       </div>
     );
   }
 
-  // ---- QUIZ ----
+  // QUIZ
   const q = questions[currentQ];
   const isSubmitted = submitted[q.id];
   const userAnswer = userAnswers[q.id] || '';
@@ -224,19 +237,23 @@ export default function QuizTab() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between text-sm">
-        <span className="text-text-muted">Domanda {currentQ + 1} di {questions.length}</span>
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold" style={{ color: '#8899b0' }}>
+          Domanda {currentQ + 1} di {questions.length}
+        </span>
         <button
           onClick={() => setPhase('setup')}
-          className="text-xs text-text-muted hover:text-text-secondary transition-colors"
+          className="text-xs px-2.5 py-1 rounded-lg transition-colors"
+          style={{ background: '#111827', color: '#4a5568', border: '1px solid rgba(255,255,255,0.06)' }}
         >
           ✕ Esci
         </button>
       </div>
-      <div className="h-1.5 bg-bg-card rounded-full overflow-hidden">
+
+      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
         <motion.div
-          className="h-full bg-gradient-to-r from-[#00b894] to-accent rounded-full"
+          className="h-full rounded-full"
+          style={{ background: accentGradient }}
           animate={{ width: `${((currentQ + 1) / questions.length) * 100}%` }}
           transition={{ duration: 0.3 }}
         />
@@ -249,22 +266,28 @@ export default function QuizTab() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -24 }}
           transition={{ duration: 0.22 }}
-          className="glass-card p-6 space-y-4"
+          className="rounded-2xl p-6 space-y-5"
+          style={{ background: '#0d1220', border: `1px solid ${accentColor}22` }}
         >
-          {/* Question header */}
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
-              <span className="text-[10px] text-text-muted uppercase tracking-widest">
+              <div
+                className="inline-flex text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full mb-2"
+                style={{ background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}30` }}
+              >
                 {q.topic} · {q.type.replace('_', '/')} · {q.difficulty}
-              </span>
-              <p className="text-text-primary font-semibold mt-1.5 text-lg leading-snug">{q.text}</p>
+              </div>
+              <p className="text-base font-bold leading-snug" style={{ color: '#e2e8f0' }}>{q.text}</p>
             </div>
-            <span className="text-xs bg-bg-card border border-border rounded-lg px-2 py-1 text-text-muted shrink-0">
+            <span
+              className="text-xs font-bold px-2.5 py-1 rounded-lg shrink-0"
+              style={{ background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}30` }}
+            >
               {q.points || 1}pt
             </span>
           </div>
 
-          {/* Multiple choice / True-False options */}
+          {/* Multiple choice / True-False */}
           {(q.type === 'multipla' || q.type === 'vera_falsa') && q.options && (
             <div className="space-y-2">
               {q.options.map((opt) => {
@@ -276,19 +299,23 @@ export default function QuizTab() {
                     key={opt}
                     onClick={() => !isSubmitted && setUserAnswers((prev) => ({ ...prev, [q.id]: opt }))}
                     disabled={isSubmitted}
-                    className={`w-full text-left px-4 py-3 rounded-xl border text-sm transition-all ${
-                      isCorrectOpt
-                        ? 'bg-green-500/15 border-green-500/50 text-green-400'
-                        : isWrongOpt
-                        ? 'bg-red-500/15 border-red-500/50 text-red-400'
-                        : isSelected
-                        ? 'bg-accent/15 border-accent/50 text-accent-light'
-                        : 'bg-bg-card border-border text-text-secondary hover:border-accent/30 hover:text-text-primary'
-                    }`}
+                    className="w-full text-left px-4 py-3 rounded-xl border text-sm transition-all font-medium"
+                    style={
+                      isCorrectOpt ? { background: 'rgba(74,222,128,0.12)', borderColor: 'rgba(74,222,128,0.4)', color: '#4ade80' }
+                        : isWrongOpt ? { background: 'rgba(248,113,113,0.12)', borderColor: 'rgba(248,113,113,0.4)', color: '#f87171' }
+                        : isSelected ? { background: `${accentColor}18`, borderColor: `${accentColor}50`, color: accentColor }
+                        : { background: '#111827', borderColor: 'rgba(255,255,255,0.07)', color: '#8899b0' }
+                    }
                   >
                     <span className="flex items-center gap-2">
-                      {isCorrectOpt && <CheckCircle2 size={13} className="shrink-0 text-green-400" />}
-                      {isWrongOpt && <XCircle size={13} className="shrink-0 text-red-400" />}
+                      {isCorrectOpt && <CheckCircle2 size={13} className="shrink-0" style={{ color: '#4ade80' }} />}
+                      {isWrongOpt && <XCircle size={13} className="shrink-0" style={{ color: '#f87171' }} />}
+                      {!isCorrectOpt && !isWrongOpt && (
+                        <span
+                          className="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 text-[9px] font-black"
+                          style={{ borderColor: isSelected ? accentColor : 'rgba(255,255,255,0.15)' }}
+                        />
+                      )}
                       {opt}
                     </span>
                   </button>
@@ -301,13 +328,19 @@ export default function QuizTab() {
           {q.type === 'aperta' && (
             <textarea
               value={userAnswer}
-              onChange={(e) =>
-                !isSubmitted && setUserAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))
-              }
+              onChange={(e) => !isSubmitted && setUserAnswers((prev) => ({ ...prev, [q.id]: e.target.value }))}
               disabled={isSubmitted}
               placeholder="Scrivi la tua risposta..."
               rows={4}
-              className="w-full bg-bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent resize-none disabled:opacity-60 transition-colors"
+              className="w-full rounded-xl px-4 py-3 text-sm resize-none disabled:opacity-60"
+              style={{
+                background: '#111827',
+                border: `1px solid ${accentColor}30`,
+                color: '#e2e8f0',
+                outline: 'none',
+              }}
+              onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
+              onBlur={(e) => { e.currentTarget.style.borderColor = `${accentColor}30`; }}
             />
           )}
 
@@ -316,42 +349,46 @@ export default function QuizTab() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`rounded-xl p-4 text-sm space-y-1 ${
+              className="rounded-xl p-4 text-sm space-y-1"
+              style={
                 q.type === 'aperta'
-                  ? 'bg-blue-500/10 border border-blue-500/30'
+                  ? { background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.3)' }
                   : isCorrect
-                  ? 'bg-green-500/10 border border-green-500/30'
-                  : 'bg-red-500/10 border border-red-500/30'
-              }`}
+                  ? { background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.3)' }
+                  : { background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)' }
+              }
             >
               {q.type !== 'aperta' && (
-                <p className={`font-semibold ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
-                  {isCorrect ? '✓ Corretto!' : `✗ Sbagliato. Risposta: "${q.correctAnswer}"`}
+                <p className="font-bold" style={{ color: isCorrect ? '#4ade80' : '#f87171' }}>
+                  {isCorrect ? '✓ Corretto!' : `✗ Sbagliato — Risposta: "${q.correctAnswer}"`}
                 </p>
               )}
-              {q.type === 'aperta' && (
-                <p className="font-semibold text-blue-400">📖 Risposta modello:</p>
-              )}
-              <p className="text-text-secondary">{q.explanation}</p>
+              {q.type === 'aperta' && <p className="font-bold" style={{ color: '#60a5fa' }}>📖 Risposta modello:</p>}
+              <p style={{ color: '#8899b0' }}>{q.explanation}</p>
             </motion.div>
           )}
 
-          {/* CTA */}
           {!isSubmitted ? (
-            <button
+            <motion.button
               onClick={() => handleSubmit(q.id)}
               disabled={q.type !== 'aperta' && !userAnswer}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00b894] to-[#00cec9] text-white text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed"
+              whileHover={{ scale: 1.01, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-3 rounded-xl font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: accentGradient, color: '#fff', boxShadow: `0 4px 16px ${accentColor}35` }}
             >
               Conferma risposta
-            </button>
+            </motion.button>
           ) : (
-            <button
+            <motion.button
               onClick={handleNext}
-              className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#00b894] to-[#00cec9] text-white text-sm font-semibold"
+              whileHover={{ scale: 1.01, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="w-full py-3 rounded-xl font-bold text-sm"
+              style={{ background: accentGradient, color: '#fff', boxShadow: `0 4px 16px ${accentColor}35` }}
             >
-              {currentQ < questions.length - 1 ? 'Prossima domanda →' : 'Vedi risultati'}
-            </button>
+              {currentQ < questions.length - 1 ? 'Prossima domanda →' : '🏆 Vedi risultati'}
+            </motion.button>
           )}
         </motion.div>
       </AnimatePresence>

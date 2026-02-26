@@ -2,13 +2,21 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Layers, Sparkles, ChevronLeft, ChevronRight, RotateCcw, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
+import { Sparkles, ChevronLeft, ChevronRight, RotateCcw, RefreshCw, CheckCircle2, XCircle } from 'lucide-react';
 import { generateFlashcards } from '@/lib/api-client';
 import type { Flashcard } from '@/types/api';
 
 type CardStatus = 'unknown' | 'known' | 'skipped';
 
-export default function FlashcardsTab() {
+interface FlashcardsTabProps {
+  accentColor?: string;
+  accentGradient?: string;
+}
+
+export default function FlashcardsTab({
+  accentColor = '#a855f7',
+  accentGradient = 'linear-gradient(135deg,#7c3aed,#a855f7)',
+}: FlashcardsTabProps) {
   const [topic, setTopic] = useState('');
   const [count, setCount] = useState(10);
   const [difficulty, setDifficulty] = useState<'base' | 'medio' | 'avanzato'>('medio');
@@ -36,19 +44,9 @@ export default function FlashcardsTab() {
     }
   };
 
-  const goTo = (index: number) => {
-    setFlipped(false);
-    setTimeout(() => setCurrentIndex(index), 50);
-  };
-
-  const goNext = () => {
-    if (currentIndex < flashcards.length - 1) goTo(currentIndex + 1);
-  };
-
-  const goPrev = () => {
-    if (currentIndex > 0) goTo(currentIndex - 1);
-  };
-
+  const goTo = (index: number) => { setFlipped(false); setTimeout(() => setCurrentIndex(index), 50); };
+  const goNext = () => { if (currentIndex < flashcards.length - 1) goTo(currentIndex + 1); };
+  const goPrev = () => { if (currentIndex > 0) goTo(currentIndex - 1); };
   const markCard = (status: CardStatus) => {
     setStatuses((prev) => ({ ...prev, [flashcards[currentIndex].id]: status }));
     goNext();
@@ -57,57 +55,67 @@ export default function FlashcardsTab() {
   const knownCount = Object.values(statuses).filter((s) => s === 'known').length;
   const unknownCount = Object.values(statuses).filter((s) => s === 'unknown').length;
   const currentCard = flashcards[currentIndex];
+  const difficultyColors = { base: '#4ade80', medio: accentColor, avanzato: '#f87171' };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Config form */}
-      <div className="glass-card p-6 space-y-4">
-        <div className="flex items-center gap-2 mb-1">
-          <Layers size={18} className="text-accent" />
-          <h2 className="font-semibold text-text-primary">Genera Flashcard</h2>
-        </div>
-
+      <div
+        className="rounded-2xl p-6 space-y-5"
+        style={{ background: '#0d1220', border: `1px solid ${accentColor}28` }}
+      >
         <div>
-          <label className="text-xs text-text-muted mb-1 block">Argomento *</label>
+          <label className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: accentColor }}>
+            Argomento
+          </label>
           <input
             type="text"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             placeholder="es. Diritto dei Contratti, Macroeconomia, Calcolo integrale..."
-            className="w-full bg-bg-card border border-border rounded-xl px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent transition-colors"
+            className="w-full rounded-xl px-4 py-3.5 text-sm"
+            style={{
+              background: '#111827',
+              border: `1px solid ${accentColor}30`,
+              color: '#e2e8f0',
+              outline: 'none',
+            }}
+            onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; e.currentTarget.style.boxShadow = `0 0 0 3px ${accentColor}18`; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = `${accentColor}30`; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
 
-        <div className="flex gap-6 flex-wrap items-end">
-          <div className="flex-1 min-w-[150px]">
-            <label className="text-xs text-text-muted mb-1 block">Numero di carte: {count}</label>
+        <div className="flex gap-5 flex-wrap items-end">
+          <div className="flex-1 min-w-[160px]">
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>
+              Carte: <span style={{ color: accentColor }} className="font-bold">{count}</span>
+            </label>
             <input
-              type="range"
-              min={5}
-              max={25}
-              step={5}
+              type="range" min={5} max={25} step={5}
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
-              className="w-full accent-[#6c5ce7]"
+              className="w-full cursor-pointer"
+              style={{ accentColor }}
             />
-            <div className="flex justify-between text-[10px] text-text-muted mt-0.5">
+            <div className="flex justify-between text-[10px] mt-1" style={{ color: '#4a5568' }}>
               <span>5</span><span>25</span>
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-text-muted mb-1 block">Difficoltà</label>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>Difficoltà</label>
             <div className="flex gap-1.5">
               {(['base', 'medio', 'avanzato'] as const).map((d) => (
                 <button
                   key={d}
                   onClick={() => setDifficulty(d)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
+                  style={
                     difficulty === d
-                      ? 'bg-accent text-white'
-                      : 'bg-bg-card border border-border text-text-secondary hover:text-text-primary'
-                  }`}
+                      ? { background: difficultyColors[d], color: '#000', boxShadow: `0 2px 12px ${difficultyColors[d]}55` }
+                      : { background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }
+                  }
                 >
                   {d.charAt(0).toUpperCase() + d.slice(1)}
                 </button>
@@ -116,171 +124,211 @@ export default function FlashcardsTab() {
           </div>
         </div>
 
-        <button
+        <motion.button
           onClick={handleGenerate}
           disabled={!topic.trim() || loading}
-          className="glow-button w-full flex items-center justify-center gap-2 py-3 rounded-xl font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          whileHover={{ scale: 1.01, y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-sm disabled:opacity-40 disabled:cursor-not-allowed"
+          style={{ background: accentGradient, color: '#fff', boxShadow: loading ? 'none' : `0 4px 20px ${accentColor}40` }}
         >
           {loading ? (
-            <>
-              <RefreshCw size={16} className="animate-spin" />
-              Gemini sta generando...
-            </>
+            <><RefreshCw size={16} className="animate-spin" /> Gemini sta generando...</>
           ) : (
-            <>
-              <Sparkles size={16} />
-              Genera {count} Flashcard
-            </>
+            <><Sparkles size={16} /> Genera {count} Flashcard</>
           )}
-        </button>
-        {error && <p className="text-red-400 text-xs">{error}</p>}
+        </motion.button>
+
+        {error && (
+          <p className="text-xs px-3 py-2 rounded-lg" style={{ background: 'rgba(248,113,113,0.1)', color: '#f87171', border: '1px solid rgba(248,113,113,0.2)' }}>
+            ⚠ {error}
+          </p>
+        )}
       </div>
 
-      {/* Flashcard Player */}
+      {/* Flashcard player */}
       {flashcards.length > 0 && (
         <div className="space-y-4">
-          {/* Stats bar */}
-          <div className="flex items-center justify-between">
-            <div className="flex gap-3 text-xs">
-              <span className="flex items-center gap-1 text-green-400">
-                <CheckCircle2 size={12} /> {knownCount} sapute
+          <div className="flex items-center justify-between px-1">
+            <div className="flex gap-4 text-xs">
+              <span className="flex items-center gap-1.5 font-semibold" style={{ color: '#4ade80' }}>
+                <CheckCircle2 size={13} /> {knownCount} sapute
               </span>
-              <span className="flex items-center gap-1 text-red-400">
-                <XCircle size={12} /> {unknownCount} da rivedere
+              <span className="flex items-center gap-1.5 font-semibold" style={{ color: '#f87171' }}>
+                <XCircle size={13} /> {unknownCount} da rivedere
               </span>
             </div>
-            <span className="text-text-secondary text-sm font-medium">
-              {currentIndex + 1} / {flashcards.length}
+            <span className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
+              {currentIndex + 1} <span style={{ color: '#4a5568' }}>/ {flashcards.length}</span>
             </span>
           </div>
 
-          {/* Progress bar */}
-          <div className="h-1.5 bg-bg-card rounded-full overflow-hidden">
+          <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
             <motion.div
-              className="h-full bg-gradient-to-r from-accent to-accent-teal rounded-full"
+              className="h-full rounded-full"
+              style={{ background: accentGradient }}
               animate={{ width: `${((currentIndex + 1) / flashcards.length) * 100}%` }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.35 }}
             />
           </div>
 
           {/* Card flip */}
           <div
             className="relative cursor-pointer select-none"
-            style={{ perspective: 1200 }}
+            style={{ perspective: 1400 }}
             onClick={() => setFlipped((f) => !f)}
           >
             <motion.div
               style={{ transformStyle: 'preserve-3d' }}
               animate={{ rotateY: flipped ? 180 : 0 }}
-              transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="relative min-h-[240px]"
+              transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="relative min-h-[260px]"
             >
               {/* Front */}
               <div
-                className="absolute inset-0 glass-card p-8 flex flex-col items-center justify-center text-center rounded-2xl"
-                style={{ backfaceVisibility: 'hidden', WebkitBackfaceVisibility: 'hidden' }}
+                className="absolute inset-0 flex flex-col items-center justify-center text-center rounded-2xl p-8"
+                style={{
+                  background: '#111827',
+                  border: `1px solid ${accentColor}22`,
+                  backfaceVisibility: 'hidden',
+                  WebkitBackfaceVisibility: 'hidden',
+                }}
               >
-                <div className="text-[10px] text-text-muted mb-3 uppercase tracking-widest font-medium">
+                <div
+                  className="text-[9px] font-bold uppercase tracking-widest mb-4 px-3 py-1 rounded-full"
+                  style={{ background: `${accentColor}18`, color: accentColor, border: `1px solid ${accentColor}30` }}
+                >
                   {currentCard.topic} · {currentCard.difficulty}
                 </div>
-                <p className="text-xl font-semibold text-text-primary leading-relaxed">
+                <p className="text-xl font-bold leading-relaxed" style={{ color: '#e2e8f0' }}>
                   {currentCard.front}
                 </p>
-                <p className="text-xs text-text-muted mt-5 opacity-60">↗ Tocca per vedere la risposta</p>
+                <p className="text-xs mt-6 flex items-center gap-1.5" style={{ color: '#4a5568' }}>
+                  <RotateCcw size={11} /> Tocca per vedere la risposta
+                </p>
               </div>
 
               {/* Back */}
               <div
-                className="absolute inset-0 glass-card p-8 flex flex-col items-center justify-center text-center rounded-2xl"
+                className="absolute inset-0 flex flex-col items-center justify-center text-center rounded-2xl p-8"
                 style={{
+                  background: `linear-gradient(135deg, ${accentColor}14, ${accentColor}06)`,
+                  border: `1px solid ${accentColor}40`,
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                   transform: 'rotateY(180deg)',
-                  background: 'linear-gradient(135deg, rgba(108,92,231,0.12), rgba(0,206,201,0.08))',
+                  boxShadow: `0 0 40px ${accentColor}18`,
                 }}
               >
-                <div className="text-[10px] text-accent mb-3 uppercase tracking-widest font-medium">
+                <div
+                  className="text-[9px] font-bold uppercase tracking-widest mb-4 px-3 py-1 rounded-full"
+                  style={{ background: `${accentColor}25`, color: accentColor, border: `1px solid ${accentColor}45` }}
+                >
                   Risposta
                 </div>
-                <p className="text-lg text-text-primary leading-relaxed">{currentCard.back}</p>
+                <p className="text-lg leading-relaxed font-medium" style={{ color: '#e2e8f0' }}>
+                  {currentCard.back}
+                </p>
                 {currentCard.hint && (
-                  <p className="text-xs text-text-muted mt-4 italic">💡 {currentCard.hint}</p>
+                  <p className="text-xs mt-5 italic px-4 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)', color: '#8899b0' }}>
+                    💡 {currentCard.hint}
+                  </p>
                 )}
               </div>
             </motion.div>
           </div>
 
           {/* Action buttons */}
-          {flipped ? (
-            <div className="flex gap-3">
-              <motion.button
-                onClick={() => markCard('unknown')}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+          <AnimatePresence mode="wait">
+            {flipped ? (
+              <motion.div
+                key="know-buttons"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0 }}
+                className="flex gap-3"
               >
-                <XCircle size={15} /> Non sapevo
-              </motion.button>
-              <motion.button
-                onClick={() => markCard('known')}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500/10 border border-green-500/30 text-green-400 text-sm font-medium"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
+                <motion.button
+                  onClick={() => markCard('unknown')}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm"
+                  style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.3)', color: '#f87171' }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 4px 16px rgba(248,113,113,0.2)' }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <XCircle size={15} /> Non sapevo
+                </motion.button>
+                <motion.button
+                  onClick={() => markCard('known')}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm"
+                  style={{ background: 'rgba(74,222,128,0.12)', border: '1px solid rgba(74,222,128,0.3)', color: '#4ade80' }}
+                  whileHover={{ scale: 1.02, boxShadow: '0 4px 16px rgba(74,222,128,0.2)' }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <CheckCircle2 size={15} /> Sapevo!
+                </motion.button>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="nav-buttons"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="flex items-center justify-between gap-3"
               >
-                <CheckCircle2 size={15} /> Sapevo!
-              </motion.button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between gap-3">
-              <motion.button
-                onClick={goPrev}
-                disabled={currentIndex === 0}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-bg-card border border-border text-text-secondary hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed text-sm"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                <ChevronLeft size={16} /> Prec.
-              </motion.button>
+                <motion.button
+                  onClick={goPrev}
+                  disabled={currentIndex === 0}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-25 disabled:cursor-not-allowed"
+                  style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <ChevronLeft size={16} /> Prec.
+                </motion.button>
 
-              <button
-                onClick={() => setFlipped(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-accent/10 border border-accent/30 text-accent-light text-sm"
-              >
-                <RotateCcw size={13} /> Gira
-              </button>
+                <motion.button
+                  onClick={() => setFlipped(true)}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold"
+                  style={{ background: `${accentColor}15`, border: `1px solid ${accentColor}35`, color: accentColor }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <RotateCcw size={13} /> Gira
+                </motion.button>
 
-              <motion.button
-                onClick={goNext}
-                disabled={currentIndex === flashcards.length - 1}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-bg-card border border-border text-text-secondary hover:text-text-primary disabled:opacity-30 disabled:cursor-not-allowed text-sm"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-              >
-                Succ. <ChevronRight size={16} />
-              </motion.button>
-            </div>
-          )}
+                <motion.button
+                  onClick={goNext}
+                  disabled={currentIndex === flashcards.length - 1}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-25 disabled:cursor-not-allowed"
+                  style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  Succ. <ChevronRight size={16} />
+                </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Dot navigation */}
-          <div className="flex gap-1 justify-center flex-wrap pt-1">
+          <div className="flex gap-1.5 justify-center flex-wrap pt-1">
             {flashcards.map((card, i) => {
               const status = statuses[card.id];
               return (
-                <button
+                <motion.button
                   key={card.id}
                   onClick={() => goTo(i)}
+                  whileHover={{ scale: 1.3 }}
                   className="rounded-full transition-all"
                   style={{
-                    width: i === currentIndex ? 20 : 8,
+                    width: i === currentIndex ? 22 : 8,
                     height: 8,
                     background:
-                      status === 'known'
-                        ? '#00b894'
-                        : status === 'unknown'
-                        ? '#d63031'
-                        : i === currentIndex
-                        ? '#6c5ce7'
-                        : 'rgba(255,255,255,0.1)',
+                      status === 'known' ? '#4ade80'
+                        : status === 'unknown' ? '#f87171'
+                        : i === currentIndex ? accentColor
+                        : 'rgba(255,255,255,0.08)',
+                    boxShadow: i === currentIndex ? `0 0 8px ${accentColor}` : 'none',
                   }}
                 />
               );
