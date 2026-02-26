@@ -188,7 +188,7 @@ export default function Home() {
 
       <main
         className="flex-1 relative z-10 transition-all duration-300"
-        style={{ marginLeft: state.sidebarOpen ? 240 : 68 }}
+        style={{ marginLeft: state.sidebarOpen ? 248 : 64 }}
       >
         {isChatView ? (
           // Chat view: no padding, full height
