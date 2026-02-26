@@ -440,6 +440,9 @@ export default function ProfessorCreator({
       examFormat,
       difficulty,
       notes,
+      chatHistory: editingId
+        ? existingProfessors.find((p) => p.id === editingId)?.chatHistory ?? []
+        : [],
       createdAt: editingId
         ? existingProfessors.find((p) => p.id === editingId)?.createdAt ?? now
         : now,

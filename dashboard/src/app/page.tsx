@@ -2,11 +2,11 @@
 
 import { useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { v4 as uuidv4 } from 'uuid';
 import Sidebar from '@/components/layout/Sidebar';
 import DashboardView from '@/components/dashboard/DashboardView';
 import OnboardingView from '@/components/onboarding/OnboardingView';
 import ProfessorCreator from '@/components/professor/ProfessorCreator';
+import ProfessorChat from '@/components/professor/ProfessorChat';
 import UploadView from '@/components/upload/UploadView';
 import StudyPlanView from '@/components/study-plan/StudyPlanView';
 import ExamSimulatorView from '@/components/exam-simulator/ExamSimulatorView';
@@ -149,6 +149,8 @@ export default function Home() {
             onNavigate={(v) => setView(v as typeof state.currentView)}
           />
         );
+      case 'chat':
+        return <ProfessorChat />;
       case 'notebook':
         return <NotebookView />;
       case 'progress':

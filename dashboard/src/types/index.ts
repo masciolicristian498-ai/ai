@@ -9,6 +9,13 @@ export interface University {
   type: 'statale' | 'telematica' | 'privata';
 }
 
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: string;
+}
+
 export interface Professor {
   id: string;
   name: string;
@@ -21,6 +28,7 @@ export interface Professor {
   examFormat: ExamFormat;
   difficulty: 1 | 2 | 3 | 4 | 5;
   notes: string;
+  chatHistory: ChatMessage[];
   createdAt: string;
   updatedAt: string;
 }

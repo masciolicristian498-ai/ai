@@ -9,6 +9,7 @@ import type {
   OnboardingData,
   UserProgress,
   ExamSimulation,
+  ChatMessage,
 } from '@/types';
 
 // Simple client-side store using React state
@@ -24,7 +25,7 @@ export interface AppState {
   onboardingData: OnboardingData | null;
   userProgress: UserProgress;
   sidebarOpen: boolean;
-  currentView: 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress' | 'notebook';
+  currentView: 'dashboard' | 'onboarding' | 'professor' | 'upload' | 'study-plan' | 'exam' | 'progress' | 'notebook' | 'chat';
 }
 
 const defaultProgress: UserProgress = {
@@ -76,6 +77,17 @@ export function useAppStore() {
     setState((prev) => ({
       ...prev,
       professors: prev.professors.map((p) => (p.id === id ? { ...p, ...updates } : p)),
+    }));
+  }, []);
+
+  const addMessageToProfessor = useCallback((professorId: string, message: ChatMessage) => {
+    setState((prev) => ({
+      ...prev,
+      professors: prev.professors.map((p) =>
+        p.id === professorId
+          ? { ...p, chatHistory: [...(p.chatHistory || []), message] }
+          : p
+      ),
     }));
   }, []);
 
@@ -141,6 +153,7 @@ export function useAppStore() {
     toggleSidebar,
     addProfessor,
     updateProfessor,
+    addMessageToProfessor,
     addMaterial,
     removeMaterial,
     setStudyPlan,
