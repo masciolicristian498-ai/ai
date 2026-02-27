@@ -883,16 +883,28 @@ export default function ProfessorCreator({
                             : 'none',
                         }}
                       >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-semibold text-text-primary">
+                        <div className="flex items-center gap-3">
+                          {/* Avatar */}
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                            style={{
+                              background: prof.color
+                                ? `${prof.color}25`
+                                : 'rgba(108,92,231,0.2)',
+                              border: `1.5px solid ${prof.color ?? 'rgba(108,92,231,0.3)'}`,
+                            }}
+                          >
+                            {prof.emoji ?? '🎓'}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-semibold text-text-primary truncate">
                               {prof.name}
                             </p>
-                            <p className="text-xs text-text-muted mt-0.5">
-                              {prof.department || 'Nessun dipartimento'}
+                            <p className="text-xs text-text-muted mt-0.5 truncate">
+                              {prof.subject || prof.department || 'Nessun dipartimento'}
                             </p>
                           </div>
-                          <div className="flex gap-0.5">
+                          <div className="flex gap-0.5 flex-shrink-0">
                             {([1, 2, 3, 4, 5] as const).map((s) => (
                               <svg
                                 key={s}
