@@ -1,7 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Plus, Clock, Target, Trash2, MessageCircle, GraduationCap, TrendingUp, ArrowRight, Flame } from 'lucide-react';
+import {
+  BookMarked, BarChart3, Upload, Zap,
+  Plus, MessageCircle, Clock, Target,
+  Trash2, ArrowRight, Flame, CalendarDays,
+} from 'lucide-react';
 import { differenceInDays, parseISO, isValid } from 'date-fns';
 import type { Professor } from '@/types';
 
@@ -10,6 +14,7 @@ interface HomeViewProps {
   onSelectProfessor: (id: string) => void;
   onCreateProfessor: () => void;
   onDeleteProfessor: (id: string) => void;
+  onNavigate?: (view: string) => void;
 }
 
 function getDaysLeft(examDate?: string): number | null {
@@ -18,18 +23,14 @@ function getDaysLeft(examDate?: string): number | null {
     const d = parseISO(examDate);
     if (!isValid(d)) return null;
     return differenceInDays(d, new Date());
-  } catch {
-    return null;
-  }
+  } catch { return null; }
 }
-
 function getDaysColor(days: number | null): string {
   if (days === null) return '#4a5568';
   if (days <= 7) return '#f87171';
   if (days <= 20) return '#fbbf24';
   return '#4ade80';
 }
-
 function getDaysLabel(days: number | null): string {
   if (days === null) return 'Data non impostata';
   if (days < 0) return 'Esame passato';
@@ -38,349 +39,616 @@ function getDaysLabel(days: number | null): string {
   return `${days} giorni`;
 }
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.07 } },
-};
+// ── Navigation orbs config ──────────────────────────────────────────────────
+const NAV_ORBS = [
+  {
+    id: 'chat',
+    label: 'Chat AI',
+    sub: 'Parla col professore',
+    emoji: '💬',
+    icon: MessageCircle,
+    c1: '#e879f9', c2: '#a21caf', c3: '#4a044e',
+    glow: '#d946ef',
+    floatDelay: 0, floatDur: 4.2,
+  },
+  {
+    id: 'notebook',
+    label: 'Notebook AI',
+    sub: 'Flashcard, Quiz, Mappe',
+    emoji: '📓',
+    icon: BookMarked,
+    c1: '#93c5fd', c2: '#2563eb', c3: '#1e3a8a',
+    glow: '#3b82f6',
+    floatDelay: 0.55, floatDur: 3.8,
+  },
+  {
+    id: 'progress',
+    label: 'Progressi',
+    sub: 'Statistiche e grafici',
+    emoji: '📈',
+    icon: BarChart3,
+    c1: '#6ee7b7', c2: '#059669', c3: '#064e3b',
+    glow: '#10b981',
+    floatDelay: 1.1, floatDur: 4.6,
+  },
+  {
+    id: 'upload',
+    label: 'Materiali',
+    sub: 'Carica appunti e file',
+    emoji: '📁',
+    icon: Upload,
+    c1: '#fde68a', c2: '#d97706', c3: '#78350f',
+    glow: '#f59e0b',
+    floatDelay: 0.3, floatDur: 3.7,
+  },
+  {
+    id: 'study-plan',
+    label: 'Piano Studio',
+    sub: 'Organizza le sessioni',
+    emoji: '📋',
+    icon: CalendarDays,
+    c1: '#f9a8d4', c2: '#db2777', c3: '#831843',
+    glow: '#ec4899',
+    floatDelay: 0.85, floatDur: 4.1,
+  },
+  {
+    id: 'exam',
+    label: 'Simulazione',
+    sub: "Prova l'esame vero",
+    emoji: '🎯',
+    icon: Zap,
+    c1: '#67e8f9', c2: '#0891b2', c3: '#164e63',
+    glow: '#06b6d4',
+    floatDelay: 1.4, floatDur: 3.9,
+  },
+] as const;
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 24, scale: 0.97 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring' as const, stiffness: 320, damping: 28 } },
-};
+export default function HomeView({
+  professors,
+  onSelectProfessor,
+  onCreateProfessor,
+  onDeleteProfessor,
+  onNavigate,
+}: HomeViewProps) {
 
-export default function HomeView({ professors, onSelectProfessor, onCreateProfessor, onDeleteProfessor }: HomeViewProps) {
+  const handleOrbClick = (id: string) => {
+    if (id === 'chat') {
+      if (professors.length === 0) {
+        onCreateProfessor();
+      } else if (professors.length === 1) {
+        onSelectProfessor(professors[0].id);
+        onNavigate?.('chat');
+      } else {
+        document.getElementById('prof-section')?.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      onNavigate?.(id);
+    }
+  };
+
   return (
-    <div className="min-h-screen relative z-10">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-10 flex items-end justify-between"
-      >
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="tag">Dashboard</span>
-          </div>
-          <h1 className="text-4xl font-black tracking-tight leading-none mb-2">
-            <span className="gradient-text">I tuoi Esami</span>
+    <div className="relative min-h-screen">
+
+      {/* ══════════════════════════════════════════════
+          BACKGROUND ATMOSPHERIC BLOBS (fixed, z-0)
+      ══════════════════════════════════════════════ */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
+        {/* Violet — top-left */}
+        <motion.div
+          animate={{ scale: [1, 1.12, 1], opacity: [0.55, 0.75, 0.55] }}
+          transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
+          style={{
+            position: 'absolute', top: '-18%', left: '-18%',
+            width: '70vw', height: '70vw', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(168,85,247,0.22) 0%, rgba(139,92,246,0.1) 40%, transparent 70%)',
+            filter: 'blur(70px)',
+          }}
+        />
+        {/* Cyan — bottom-right */}
+        <motion.div
+          animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.65, 0.45] }}
+          transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
+          style={{
+            position: 'absolute', bottom: '-22%', right: '-18%',
+            width: '65vw', height: '65vw', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, rgba(14,165,233,0.08) 40%, transparent 70%)',
+            filter: 'blur(70px)',
+          }}
+        />
+        {/* Pink — center */}
+        <motion.div
+          animate={{ scale: [1, 1.06, 1], x: [0, 40, 0], y: [0, -30, 0] }}
+          transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut', delay: 6 }}
+          style={{
+            position: 'absolute', top: '35%', right: '15%',
+            width: '42vw', height: '42vw', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)',
+            filter: 'blur(80px)',
+          }}
+        />
+        {/* Green — bottom-left */}
+        <motion.div
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
+          style={{
+            position: 'absolute', bottom: '5%', left: '5%',
+            width: '35vw', height: '35vw', borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(16,185,129,0.14) 0%, transparent 70%)',
+            filter: 'blur(60px)',
+          }}
+        />
+      </div>
+
+      {/* ══════════════════════════════════════════════
+          CONTENT (z-10)
+      ══════════════════════════════════════════════ */}
+      <div className="relative" style={{ zIndex: 10 }}>
+
+        {/* ── HERO SECTION ─────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="text-center mb-16 pt-4"
+        >
+          {/* Badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            className="flex justify-center mb-6"
+          >
+            <span
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase"
+              style={{
+                background: 'rgba(168,85,247,0.12)',
+                color: '#e879f9',
+                border: '1px solid rgba(168,85,247,0.3)',
+                boxShadow: '0 0 20px rgba(168,85,247,0.15)',
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse inline-block" />
+              Powered by Gemini AI
+            </span>
+          </motion.div>
+
+          {/* Main headline */}
+          <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[0.95] mb-5">
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="block"
+              style={{
+                background: 'linear-gradient(135deg, #f8fafc 0%, #c084fc 40%, #06b6d4 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              Studia più
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.42 }}
+              className="block"
+              style={{ color: '#f1f5f9' }}
+            >
+              intelligente.
+            </motion.span>
           </h1>
-          <p style={{ color: '#8899b0' }} className="text-base">
-            {professors.length === 0
-              ? 'Aggiungi il tuo primo esame per iniziare'
-              : `${professors.length} ${professors.length === 1 ? 'esame attivo' : 'esami attivi'} — studia con il tuo professore AI`}
-          </p>
-        </div>
-        <motion.button
-          onClick={onCreateProfessor}
-          whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="glow-button flex items-center gap-2 px-5 py-2.5 text-sm font-bold"
-        >
-          <Plus size={16} />
-          Nuovo esame
-        </motion.button>
-      </motion.div>
 
-      {/* Empty State */}
-      {professors.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.15 }}
-          className="flex flex-col items-center justify-center py-28 text-center"
-        >
-          <div
-            className="w-20 h-20 rounded-2xl flex items-center justify-center text-5xl mb-6"
-            style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.18)' }}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.55 }}
+            className="text-lg max-w-md mx-auto"
+            style={{ color: '#64748b' }}
           >
-            🎓
-          </div>
-          <h2 className="text-2xl font-black tracking-tight mb-2" style={{ color: '#e2e8f0' }}>
-            Nessun esame ancora
-          </h2>
-          <p className="text-base mb-8 max-w-sm leading-relaxed" style={{ color: '#8899b0' }}>
-            Crea il tuo primo professore AI per iniziare a studiare in modo intelligente.
-          </p>
-          <motion.button
-            onClick={onCreateProfessor}
-            whileHover={{ scale: 1.04 }}
-            whileTap={{ scale: 0.97 }}
-            className="glow-button flex items-center gap-2.5 px-8 py-3.5 text-base font-bold"
-          >
-            <Plus size={18} />
-            Aggiungi il tuo primo esame
-          </motion.button>
+            Il tuo assistente universitario AI — scegli una sezione per iniziare
+          </motion.p>
         </motion.div>
-      )}
 
-      {/* Professor Cards Grid */}
-      {professors.length > 0 && (
+        {/* ── NAVIGATION ORBS GRID ─────────────────── */}
         <motion.div
-          variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-10"
+          variants={{ visible: { transition: { staggerChildren: 0.09, delayChildren: 0.55 } } }}
+          className="grid grid-cols-3 gap-y-10 gap-x-4 sm:gap-x-8 max-w-xl sm:max-w-2xl mx-auto px-2 mb-20"
         >
-          {professors.map((prof) => {
-            const daysLeft = getDaysLeft(prof.examDate);
-            const daysColor = getDaysColor(daysLeft);
-            const daysLabel = getDaysLabel(daysLeft);
-            const color = prof.color || '#10b981';
-            const emoji = prof.emoji || '🎓';
-            const chatCount = prof.chatHistory?.length || 0;
-            const isUrgent = daysLeft !== null && daysLeft <= 7 && daysLeft >= 0;
-
-            return (
-              <motion.div
-                key={prof.id}
-                variants={cardVariants}
-                className="relative group"
-              >
-                {/* Delete */}
-                <motion.button
-                  onClick={(e) => { e.stopPropagation(); onDeleteProfessor(prof.id); }}
-                  className="absolute top-3 right-3 z-10 w-7 h-7 rounded-lg flex items-center justify-center
-                    opacity-0 group-hover:opacity-100 transition-all duration-200"
-                  style={{ background: 'rgba(248,113,113,0.1)', color: '#f87171' }}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  <Trash2 size={13} />
-                </motion.button>
-
-                {/* Card */}
-                <motion.div
-                  onClick={() => onSelectProfessor(prof.id)}
-                  whileHover={{ y: -3 }}
-                  whileTap={{ scale: 0.99 }}
-                  className="cursor-pointer rounded-xl overflow-hidden relative"
-                  style={{
-                    background: '#111827',
-                    border: `1px solid rgba(255,255,255,0.06)`,
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={e => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.border = `1px solid ${color}30`;
-                    el.style.boxShadow = `0 8px 32px rgba(0,0,0,0.5)`;
-                  }}
-                  onMouseLeave={e => {
-                    const el = e.currentTarget as HTMLElement;
-                    el.style.border = `1px solid rgba(255,255,255,0.06)`;
-                    el.style.boxShadow = 'none';
-                  }}
-                >
-                  {/* Colored left bar */}
-                  <div
-                    className="absolute left-0 top-0 bottom-0 w-[3px]"
-                    style={{ background: `linear-gradient(180deg, ${color}, ${color}55)` }}
-                  />
-
-                  {/* Urgent glow badge */}
-                  {isUrgent && (
-                    <div className="absolute top-3 left-5">
-                      <div
-                        className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold"
-                        style={{ background: 'rgba(248,113,113,0.15)', color: '#f87171', border: '1px solid rgba(248,113,113,0.25)' }}
-                      >
-                        <Flame size={9} />
-                        URGENTE
-                      </div>
-                    </div>
-                  )}
-
-                  <div className="p-5 pl-6">
-                    {/* Avatar + name */}
-                    <div className="flex items-start gap-3.5 mb-4" style={{ marginTop: isUrgent ? '20px' : '0' }}>
-                      <div
-                        className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{
-                          background: `${color}18`,
-                          border: `1px solid ${color}30`,
-                          fontSize: '22px',
-                        }}
-                      >
-                        {emoji}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-extrabold text-sm tracking-tight truncate" style={{ color: '#e2e8f0' }}>
-                          Prof. {prof.name}
-                        </h3>
-                        <p className="text-xs font-semibold mt-0.5 truncate" style={{ color }}>
-                          {prof.subject || prof.department || 'Materia'}
-                        </p>
-                        {/* Difficulty dots */}
-                        <div className="flex items-center gap-1 mt-1.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <div
-                              key={i}
-                              className="w-4 h-1 rounded-full"
-                              style={{
-                                background: i < (prof.difficulty || 3)
-                                  ? `linear-gradient(90deg,${color},${color}88)`
-                                  : 'rgba(255,255,255,0.07)',
-                              }}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Exam countdown */}
-                    <div
-                      className="flex items-center gap-2 px-3 py-2 rounded-lg mb-3"
-                      style={{
-                        background: `${daysColor}0e`,
-                        border: `1px solid ${daysColor}28`,
-                      }}
-                    >
-                      <Clock size={12} style={{ color: daysColor }} />
-                      <span className="text-xs font-bold" style={{ color: daysColor }}>
-                        {daysLabel}
-                      </span>
-                      {daysLeft !== null && daysLeft > 0 && (
-                        <span className="text-[10px] ml-auto" style={{ color: '#4a5568' }}>
-                          all&apos;esame
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Stats row */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div className="flex items-center gap-1" style={{ color: '#4a5568' }}>
-                        <MessageCircle size={11} />
-                        <span className="text-[11px]">{chatCount}</span>
-                      </div>
-                      <div className="flex items-center gap-1" style={{ color: '#4a5568' }}>
-                        <Target size={11} />
-                        <span className="text-[11px]">{prof.targetGrade || 28}/30</span>
-                      </div>
-                      <div
-                        className="ml-auto text-[10px] font-semibold px-2 py-0.5 rounded"
-                        style={{
-                          background: 'rgba(255,255,255,0.05)',
-                          color: '#8899b0',
-                          border: '1px solid rgba(255,255,255,0.06)',
-                        }}
-                      >
-                        {prof.examFormat}
-                      </div>
-                    </div>
-
-                    {/* CTA */}
-                    <motion.button
-                      onClick={() => onSelectProfessor(prof.id)}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="w-full py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all duration-200"
-                      style={{
-                        background: `${color}14`,
-                        color,
-                        border: `1px solid ${color}28`,
-                      }}
-                      onMouseEnter={e => {
-                        const el = e.currentTarget as HTMLElement;
-                        el.style.background = `${color}22`;
-                      }}
-                      onMouseLeave={e => {
-                        const el = e.currentTarget as HTMLElement;
-                        el.style.background = `${color}14`;
-                      }}
-                    >
-                      Studia con me
-                      <ArrowRight size={12} />
-                    </motion.button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            );
-          })}
-
-          {/* Add new card */}
-          <motion.div variants={cardVariants}>
-            <motion.button
-              onClick={onCreateProfessor}
-              whileHover={{ y: -3 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full h-full min-h-[240px] rounded-xl border-2 border-dashed flex flex-col items-center justify-center gap-3 transition-all duration-200 group"
-              style={{ borderColor: 'rgba(16,185,129,0.15)' }}
-              onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.35)')}
-              onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(16,185,129,0.15)')}
+          {NAV_ORBS.map((orb) => (
+            <motion.div
+              key={orb.id}
+              variants={{
+                hidden: { opacity: 0, scale: 0.5, y: 40 },
+                visible: {
+                  opacity: 1, scale: 1, y: 0,
+                  transition: { type: 'spring', stiffness: 220, damping: 20 },
+                },
+              }}
+              className="flex flex-col items-center gap-3"
             >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center transition-all group-hover:scale-105"
-                style={{ background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)' }}
+              {/* Floating orb button */}
+              <motion.button
+                animate={{ y: [0, -13, 0] }}
+                transition={{
+                  duration: orb.floatDur,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: orb.floatDelay,
+                }}
+                whileHover={{ scale: 1.12, y: -18 }}
+                whileTap={{ scale: 0.93 }}
+                onClick={() => handleOrbClick(orb.id)}
+                className="relative flex items-center justify-center focus:outline-none"
+                style={{
+                  width: 'clamp(100px, 14vw, 160px)',
+                  height: 'clamp(100px, 14vw, 160px)',
+                  borderRadius: '50%',
+                  background: `radial-gradient(circle at 38% 32%, ${orb.c1}f0 0%, ${orb.c2} 48%, ${orb.c3} 100%)`,
+                  boxShadow: `0 0 40px ${orb.glow}55, 0 0 80px ${orb.glow}22, 0 20px 40px rgba(0,0,0,0.4), inset 0 0 30px rgba(255,255,255,0.04)`,
+                  border: `1px solid ${orb.glow}35`,
+                  cursor: 'pointer',
+                  transition: 'box-shadow 0.25s ease',
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    `0 0 60px ${orb.glow}80, 0 0 120px ${orb.glow}35, 0 24px 48px rgba(0,0,0,0.5), inset 0 0 40px rgba(255,255,255,0.06)`;
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.boxShadow =
+                    `0 0 40px ${orb.glow}55, 0 0 80px ${orb.glow}22, 0 20px 40px rgba(0,0,0,0.4), inset 0 0 30px rgba(255,255,255,0.04)`;
+                }}
               >
-                <Plus size={20} style={{ color: '#10b981' }} />
-              </div>
-              <div className="text-center">
-                <p className="text-sm font-bold" style={{ color: '#8899b0' }}>
-                  Aggiungi esame
-                </p>
-                <p className="text-xs mt-0.5" style={{ color: '#4a5568' }}>Nuovo professore AI</p>
-              </div>
-            </motion.button>
-          </motion.div>
-        </motion.div>
-      )}
+                {/* Specular highlight */}
+                <div
+                  style={{
+                    position: 'absolute', top: '13%', left: '18%',
+                    width: '32%', height: '22%', borderRadius: '50%',
+                    background: 'radial-gradient(circle, rgba(255,255,255,0.65) 0%, transparent 100%)',
+                    filter: 'blur(4px)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                {/* Secondary glow dot */}
+                <div
+                  style={{
+                    position: 'absolute', bottom: '18%', right: '20%',
+                    width: '18%', height: '12%', borderRadius: '50%',
+                    background: 'rgba(255,255,255,0.2)',
+                    filter: 'blur(3px)',
+                    pointerEvents: 'none',
+                  }}
+                />
+                {/* Emoji */}
+                <span
+                  style={{
+                    fontSize: 'clamp(28px, 4vw, 48px)',
+                    lineHeight: 1,
+                    position: 'relative',
+                    zIndex: 1,
+                    filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.5))',
+                  }}
+                >
+                  {orb.emoji}
+                </span>
+              </motion.button>
 
-      {/* Stats bar */}
-      {professors.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="rounded-xl p-5 flex flex-wrap items-center gap-6"
-          style={{ background: '#111827', border: '1px solid rgba(16,185,129,0.1)' }}
-        >
-          {[
-            {
-              icon: <GraduationCap size={16} style={{ color: '#10b981' }} />,
-              value: professors.length,
-              label: 'Professori',
-              bg: 'rgba(16,185,129,0.1)',
-            },
-            {
-              icon: <MessageCircle size={16} style={{ color: '#06b6d4' }} />,
-              value: professors.reduce((acc, p) => acc + (p.chatHistory?.length || 0), 0),
-              label: 'Messaggi',
-              bg: 'rgba(6,182,212,0.1)',
-            },
-            {
-              icon: <TrendingUp size={16} style={{ color: '#fbbf24' }} />,
-              value: professors.filter((p) => {
-                const d = getDaysLeft(p.examDate);
-                return d !== null && d <= 14 && d >= 0;
-              }).length,
-              label: 'Entro 2 sett.',
-              bg: 'rgba(251,191,36,0.1)',
-            },
-            {
-              icon: <Target size={16} style={{ color: '#a78bfa' }} />,
-              value: professors.length > 0
-                ? Math.round(professors.reduce((acc, p) => acc + (p.targetGrade || 28), 0) / professors.length)
-                : 0,
-              label: 'Media obiettivo',
-              bg: 'rgba(167,139,250,0.1)',
-            },
-          ].map((stat, i) => (
-            <div key={i} className="flex items-center gap-3">
-              {i > 0 && <div className="w-px h-8 hidden sm:block" style={{ background: 'rgba(16,185,129,0.08)' }} />}
-              <div
-                className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: stat.bg }}
-              >
-                {stat.icon}
+              {/* Label */}
+              <div className="text-center">
+                <p
+                  className="font-extrabold text-sm sm:text-base leading-tight"
+                  style={{ color: '#f1f5f9' }}
+                >
+                  {orb.label}
+                </p>
+                <p
+                  className="text-[10px] sm:text-xs mt-0.5 leading-snug hidden sm:block"
+                  style={{ color: '#475569' }}
+                >
+                  {orb.sub}
+                </p>
               </div>
-              <div>
-                <p className="text-xl font-black leading-none" style={{ color: '#e2e8f0' }}>{stat.value}</p>
-                <p className="text-[11px] mt-0.5" style={{ color: '#4a5568' }}>{stat.label}</p>
-              </div>
-            </div>
+            </motion.div>
           ))}
         </motion.div>
-      )}
+
+        {/* ── SEPARATOR ────────────────────────────── */}
+        <div
+          className="mb-10 h-px max-w-4xl mx-auto"
+          style={{
+            background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.35), rgba(6,182,212,0.35), transparent)',
+          }}
+        />
+
+        {/* ── PROFESSOR SECTION ────────────────────── */}
+        <div id="prof-section">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-2xl font-black" style={{ color: '#f1f5f9' }}>
+                I tuoi Esami
+                {professors.length > 0 && (
+                  <span className="ml-2 text-base font-semibold" style={{ color: '#475569' }}>
+                    ({professors.length})
+                  </span>
+                )}
+              </h2>
+              <p className="text-sm mt-0.5" style={{ color: '#475569' }}>
+                {professors.length === 0
+                  ? 'Aggiungi il tuo primo esame per iniziare'
+                  : 'Seleziona un professore per chattare'}
+              </p>
+            </div>
+            <motion.button
+              onClick={onCreateProfessor}
+              whileHover={{ scale: 1.04, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold"
+              style={{
+                background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                color: '#fff',
+                boxShadow: '0 4px 20px rgba(168,85,247,0.4)',
+              }}
+            >
+              <Plus size={16} />
+              Nuovo esame
+            </motion.button>
+          </div>
+
+          {/* Empty State */}
+          {professors.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex flex-col items-center justify-center py-20 text-center rounded-2xl"
+              style={{
+                background: 'rgba(168,85,247,0.04)',
+                border: '1px dashed rgba(168,85,247,0.2)',
+              }}
+            >
+              <div
+                className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl mb-5"
+                style={{
+                  background: 'rgba(168,85,247,0.1)',
+                  border: '1px solid rgba(168,85,247,0.25)',
+                  boxShadow: '0 0 30px rgba(168,85,247,0.15)',
+                }}
+              >
+                🎓
+              </div>
+              <h3 className="text-xl font-black mb-2" style={{ color: '#f1f5f9' }}>
+                Nessun esame ancora
+              </h3>
+              <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: '#475569' }}>
+                Crea il tuo primo professore AI e inizia a studiare in modo intelligente
+              </p>
+              <motion.button
+                onClick={onCreateProfessor}
+                whileHover={{ scale: 1.04, y: -1 }}
+                whileTap={{ scale: 0.97 }}
+                className="flex items-center gap-2 px-7 py-3.5 rounded-xl text-sm font-bold"
+                style={{
+                  background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+                  color: '#fff',
+                  boxShadow: '0 4px 24px rgba(168,85,247,0.45)',
+                }}
+              >
+                <Plus size={16} />
+                Aggiungi il tuo primo esame
+              </motion.button>
+            </motion.div>
+          )}
+
+          {/* Professor cards grid */}
+          {professors.length > 0 && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-8"
+            >
+              {professors.map((prof) => {
+                const daysLeft = getDaysLeft(prof.examDate);
+                const daysColor = getDaysColor(daysLeft);
+                const daysLabel = getDaysLabel(daysLeft);
+                const color = prof.color || '#a855f7';
+                const emoji = prof.emoji || '🎓';
+                const chatCount = prof.chatHistory?.length || 0;
+                const isUrgent = daysLeft !== null && daysLeft <= 7 && daysLeft >= 0;
+
+                return (
+                  <motion.div
+                    key={prof.id}
+                    variants={{
+                      hidden: { opacity: 0, y: 20, scale: 0.97 },
+                      visible: {
+                        opacity: 1, y: 0, scale: 1,
+                        transition: { type: 'spring', stiffness: 300, damping: 26 },
+                      },
+                    }}
+                    className="relative group"
+                  >
+                    {/* Delete */}
+                    <motion.button
+                      onClick={(e) => { e.stopPropagation(); onDeleteProfessor(prof.id); }}
+                      className="absolute top-3 right-3 z-10 w-7 h-7 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200"
+                      style={{ background: 'rgba(248,113,113,0.12)', color: '#f87171', border: '1px solid rgba(248,113,113,0.2)' }}
+                      whileHover={{ scale: 1.12 }}
+                      whileTap={{ scale: 0.9 }}
+                    >
+                      <Trash2 size={12} />
+                    </motion.button>
+
+                    {/* Card */}
+                    <motion.div
+                      onClick={() => { onSelectProfessor(prof.id); onNavigate?.('chat'); }}
+                      whileHover={{ y: -4 }}
+                      whileTap={{ scale: 0.99 }}
+                      className="cursor-pointer rounded-2xl overflow-hidden relative"
+                      style={{
+                        background: 'rgba(17,24,39,0.85)',
+                        border: `1px solid rgba(255,255,255,0.06)`,
+                        backdropFilter: 'blur(12px)',
+                        transition: 'all 0.25s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.border = `1px solid ${color}40`;
+                        el.style.boxShadow = `0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px ${color}20`;
+                      }}
+                      onMouseLeave={(e) => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.border = `1px solid rgba(255,255,255,0.06)`;
+                        el.style.boxShadow = 'none';
+                      }}
+                    >
+                      {/* Top color strip */}
+                      <div
+                        className="h-1 w-full"
+                        style={{ background: `linear-gradient(90deg, ${color}, ${color}44, transparent)` }}
+                      />
+
+                      {/* Urgent badge */}
+                      {isUrgent && (
+                        <div className="absolute top-4 right-4 z-10">
+                          <div
+                            className="flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase"
+                            style={{
+                              background: 'rgba(248,113,113,0.15)',
+                              color: '#f87171',
+                              border: '1px solid rgba(248,113,113,0.3)',
+                              boxShadow: '0 0 12px rgba(248,113,113,0.2)',
+                            }}
+                          >
+                            <Flame size={8} /> Urgente
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="p-5">
+                        {/* Avatar + name */}
+                        <div className="flex items-start gap-3 mb-4">
+                          <div
+                            className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 text-2xl"
+                            style={{
+                              background: `${color}18`,
+                              border: `1px solid ${color}30`,
+                              boxShadow: `0 0 20px ${color}20`,
+                            }}
+                          >
+                            {emoji}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-extrabold text-sm tracking-tight truncate" style={{ color: '#f1f5f9' }}>
+                              Prof. {prof.name}
+                            </h3>
+                            <p className="text-xs font-semibold mt-0.5 truncate" style={{ color }}>
+                              {prof.subject || prof.department || 'Materia'}
+                            </p>
+                            <div className="flex items-center gap-0.5 mt-1.5">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className="h-1 rounded-full"
+                                  style={{
+                                    width: i < (prof.difficulty || 3) ? 14 : 10,
+                                    background: i < (prof.difficulty || 3)
+                                      ? `linear-gradient(90deg,${color},${color}66)`
+                                      : 'rgba(255,255,255,0.06)',
+                                  }}
+                                />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Countdown */}
+                        <div
+                          className="flex items-center gap-2 px-3 py-2 rounded-xl mb-3"
+                          style={{ background: `${daysColor}0c`, border: `1px solid ${daysColor}25` }}
+                        >
+                          <Clock size={11} style={{ color: daysColor }} />
+                          <span className="text-xs font-bold" style={{ color: daysColor }}>{daysLabel}</span>
+                          {daysLeft !== null && daysLeft > 0 && (
+                            <span className="text-[10px] ml-auto" style={{ color: '#334155' }}>all&apos;esame</span>
+                          )}
+                        </div>
+
+                        {/* Stats */}
+                        <div className="flex items-center gap-3 mb-4">
+                          <div className="flex items-center gap-1" style={{ color: '#334155' }}>
+                            <MessageCircle size={10} />
+                            <span className="text-[10px] font-semibold">{chatCount}</span>
+                          </div>
+                          <div className="flex items-center gap-1" style={{ color: '#334155' }}>
+                            <Target size={10} />
+                            <span className="text-[10px] font-semibold">{prof.targetGrade || 28}/30</span>
+                          </div>
+                          <div
+                            className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-lg"
+                            style={{ background: 'rgba(255,255,255,0.05)', color: '#64748b' }}
+                          >
+                            {prof.examFormat}
+                          </div>
+                        </div>
+
+                        {/* CTA */}
+                        <div
+                          className="w-full py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5"
+                          style={{
+                            background: `linear-gradient(135deg, ${color}22, ${color}12)`,
+                            border: `1px solid ${color}30`,
+                            color,
+                          }}
+                        >
+                          Studia con me <ArrowRight size={11} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  </motion.div>
+                );
+              })}
+
+              {/* Add card */}
+              <motion.div
+                variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
+              >
+                <motion.button
+                  onClick={onCreateProfessor}
+                  whileHover={{ y: -4 }}
+                  whileTap={{ scale: 0.99 }}
+                  className="w-full min-h-[240px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
+                  style={{ borderColor: 'rgba(168,85,247,0.15)' }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(168,85,247,0.4)';
+                    e.currentTarget.style.background = 'rgba(168,85,247,0.04)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(168,85,247,0.15)';
+                    e.currentTarget.style.background = 'transparent';
+                  }}
+                >
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:rotate-3"
+                    style={{
+                      background: 'rgba(168,85,247,0.1)',
+                      border: '1px solid rgba(168,85,247,0.25)',
+                    }}
+                  >
+                    <Plus size={20} style={{ color: '#a855f7' }} />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-bold" style={{ color: '#64748b' }}>Aggiungi esame</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#334155' }}>Nuovo professore AI</p>
+                  </div>
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          )}
+        </div>
+
+      </div>
     </div>
   );
 }

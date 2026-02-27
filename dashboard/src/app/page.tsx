@@ -95,6 +95,7 @@ export default function Home() {
             onSelectProfessor={selectProfessor}
             onCreateProfessor={() => setView('create-professor')}
             onDeleteProfessor={handleDeleteProfessor}
+            onNavigate={navigate}
           />
         );
 
@@ -167,6 +168,7 @@ export default function Home() {
             onSelectProfessor={selectProfessor}
             onCreateProfessor={() => setView('create-professor')}
             onDeleteProfessor={handleDeleteProfessor}
+            onNavigate={navigate}
           />
         );
     }

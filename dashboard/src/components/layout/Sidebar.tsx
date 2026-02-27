@@ -51,21 +51,26 @@ export default function Sidebar({
       transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
       className="fixed left-0 top-0 h-screen z-40 flex flex-col"
       style={{
-        background: '#0a0f1c',
-        borderRight: '1px solid rgba(16,185,129,0.1)',
+        background: 'rgba(6,4,16,0.92)',
+        backdropFilter: 'blur(20px)',
+        borderRight: '1px solid rgba(168,85,247,0.12)',
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-3.5 h-14 border-b flex-shrink-0" style={{ borderColor: 'rgba(16,185,129,0.1)' }}>
+      <div className="flex items-center gap-3 px-3.5 h-14 border-b flex-shrink-0" style={{ borderColor: 'rgba(168,85,247,0.12)' }}>
         <div className="relative flex-shrink-0">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black"
-            style={{ background: 'linear-gradient(135deg, #10b981, #06b6d4)', color: '#000' }}
+            style={{
+              background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
+              color: '#fff',
+              boxShadow: '0 0 16px rgba(168,85,247,0.5)',
+            }}
           >
             S
           </div>
           <div className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-bg-primary"
-            style={{ background: '#10b981' }} />
+            style={{ background: '#a855f7', boxShadow: '0 0 6px #a855f7' }} />
         </div>
         <AnimatePresence>
           {sidebarOpen && (
@@ -91,25 +96,25 @@ export default function Sidebar({
           className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 relative"
           style={{
             background: currentView === 'home' || currentView === 'create-professor'
-              ? 'rgba(16,185,129,0.1)'
+              ? 'rgba(168,85,247,0.12)'
               : 'transparent',
             color: currentView === 'home' || currentView === 'create-professor'
-              ? '#6ee7b7'
-              : '#8899b0',
+              ? '#d8b4fe'
+              : '#94a3b8',
           }}
         >
           {(currentView === 'home' || currentView === 'create-professor') && (
             <motion.div
               layoutId="sidebarActivePill"
               className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-              style={{ background: 'linear-gradient(180deg,#10b981,#06b6d4)' }}
+              style={{ background: 'linear-gradient(180deg,#a855f7,#06b6d4)' }}
               transition={{ type: 'spring', stiffness: 500, damping: 35 }}
             />
           )}
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{
-              background: currentView === 'home' ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)',
+              background: currentView === 'home' ? 'rgba(168,85,247,0.18)' : 'rgba(255,255,255,0.04)',
             }}
           >
             <Home size={15} />
@@ -232,7 +237,7 @@ export default function Sidebar({
         </motion.button>
 
         {/* Divider */}
-        <div className="mx-2 my-2 border-t" style={{ borderColor: 'rgba(16,185,129,0.08)' }} />
+        <div className="mx-2 my-2 border-t" style={{ borderColor: 'rgba(168,85,247,0.1)' }} />
 
         {/* Tools section */}
         <AnimatePresence>
@@ -260,21 +265,21 @@ export default function Sidebar({
               whileTap={{ scale: 0.98 }}
               className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 relative"
               style={{
-                background: isActive ? 'rgba(16,185,129,0.1)' : 'transparent',
-                color: isActive ? '#6ee7b7' : '#8899b0',
+                background: isActive ? 'rgba(168,85,247,0.12)' : 'transparent',
+                color: isActive ? '#d8b4fe' : '#94a3b8',
               }}
             >
               {isActive && (
                 <motion.div
                   layoutId="sidebarActivePill"
                   className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full"
-                  style={{ background: 'linear-gradient(180deg,#10b981,#06b6d4)' }}
+                  style={{ background: 'linear-gradient(180deg,#a855f7,#06b6d4)' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: isActive ? 'rgba(16,185,129,0.15)' : 'rgba(255,255,255,0.04)' }}
+                style={{ background: isActive ? 'rgba(168,85,247,0.18)' : 'rgba(255,255,255,0.04)' }}
               >
                 <Icon size={14} />
               </div>
@@ -297,7 +302,7 @@ export default function Sidebar({
       </div>
 
       {/* Bottom footer */}
-      <div className="p-2 border-t flex-shrink-0" style={{ borderColor: 'rgba(16,185,129,0.08)' }}>
+      <div className="p-2 border-t flex-shrink-0" style={{ borderColor: 'rgba(168,85,247,0.1)' }}>
         <AnimatePresence>
           {sidebarOpen && studyStreak > 0 && (
             <motion.div
@@ -305,7 +310,7 @@ export default function Sidebar({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="mb-2 px-3 py-2 rounded-lg"
-              style={{ background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.15)' }}
+              style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.18)' }}
             >
               <div className="flex items-center gap-1.5">
                 <Zap size={10} style={{ color: '#fbbf24' }} />
