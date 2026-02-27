@@ -81,7 +81,7 @@ export default function QuizTab({
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
         className="rounded-2xl p-10 text-center space-y-6"
-        style={{ background: '#0d1220', border: `1px solid ${accentColor}28` }}
+        style={{ background: '#ffffff', border: `1px solid ${accentColor}28`, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
       >
         <div
           className="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto"
@@ -91,12 +91,12 @@ export default function QuizTab({
         </div>
         <div>
           <h2 className="text-5xl font-black mb-1" style={{ color: gradeColor }}>{pct}%</h2>
-          <p className="text-sm" style={{ color: '#8899b0' }}>
+          <p className="text-sm" style={{ color: '#6b7280' }}>
             {score} / {totalPoints} punti · voto stimato:{' '}
-            <strong style={{ color: '#e2e8f0' }}>{grade}</strong>
+            <strong style={{ color: '#1e1b4b' }}>{grade}</strong>
           </p>
         </div>
-        <div className="h-3 rounded-full overflow-hidden max-w-xs mx-auto" style={{ background: 'rgba(255,255,255,0.06)' }}>
+        <div className="h-3 rounded-full overflow-hidden max-w-xs mx-auto" style={{ background: 'rgba(124,58,237,0.08)' }}>
           <motion.div
             className="h-full rounded-full"
             style={{ background: `linear-gradient(90deg,${gradeColor},${gradeColor}88)`, boxShadow: `0 0 12px ${gradeColor}` }}
@@ -105,12 +105,12 @@ export default function QuizTab({
             transition={{ duration: 1.2, ease: 'easeOut' }}
           />
         </div>
-        <p className="text-base font-semibold" style={{ color: '#e2e8f0' }}>{emoji}</p>
+        <p className="text-base font-semibold" style={{ color: '#1e1b4b' }}>{emoji}</p>
         <div className="flex gap-3 justify-center">
           <button
             onClick={() => { setPhase('setup'); setQuestions([]); }}
             className="px-5 py-2.5 rounded-xl text-sm font-semibold transition-colors"
-            style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }}
+            style={{ background: '#f1f0ff', border: '1px solid rgba(124,58,237,0.12)', color: '#6b7280' }}
           >
             Nuovo Quiz
           </button>
@@ -129,7 +129,7 @@ export default function QuizTab({
   // SETUP
   if (phase === 'setup') {
     return (
-      <div className="rounded-2xl p-6 space-y-5" style={{ background: '#0d1220', border: `1px solid ${accentColor}28` }}>
+      <div className="rounded-2xl p-6 space-y-5" style={{ background: '#ffffff', border: `1px solid ${accentColor}28`, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}>
         <div>
           <label className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: accentColor }}>
             Argomento
@@ -141,7 +141,7 @@ export default function QuizTab({
             onKeyDown={(e) => e.key === 'Enter' && handleGenerate()}
             placeholder="es. Teoria dei giochi, Diritto Penale, Matematica discreta..."
             className="w-full rounded-xl px-4 py-3.5 text-sm"
-            style={{ background: '#111827', border: `1px solid ${accentColor}30`, color: '#e2e8f0', outline: 'none' }}
+            style={{ background: '#f8f7ff', border: `1px solid ${accentColor}30`, color: '#1e1b4b', outline: 'none' }}
             onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; e.currentTarget.style.boxShadow = `0 0 0 3px ${accentColor}18`; }}
             onBlur={(e) => { e.currentTarget.style.borderColor = `${accentColor}30`; e.currentTarget.style.boxShadow = 'none'; }}
           />
@@ -149,7 +149,7 @@ export default function QuizTab({
 
         <div className="flex gap-5 flex-wrap items-end">
           <div className="flex-1 min-w-[160px]">
-            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#6b7280' }}>
               Domande: <span style={{ color: accentColor }} className="font-bold">{questionCount}</span>
             </label>
             <input
@@ -159,13 +159,13 @@ export default function QuizTab({
               className="w-full cursor-pointer"
               style={{ accentColor }}
             />
-            <div className="flex justify-between text-[10px] mt-1" style={{ color: '#4a5568' }}>
+            <div className="flex justify-between text-[10px] mt-1" style={{ color: '#9ca3af' }}>
               <span>3</span><span>15</span>
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>Difficoltà</label>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#6b7280' }}>Difficoltà</label>
             <div className="flex gap-1.5">
               {(['base', 'medio', 'avanzato'] as const).map((d) => (
                 <button
@@ -175,7 +175,7 @@ export default function QuizTab({
                   style={
                     difficulty === d
                       ? { background: difficultyColors[d], color: '#000', boxShadow: `0 2px 12px ${difficultyColors[d]}55` }
-                      : { background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }
+                      : { background: '#f1f0ff', border: '1px solid rgba(124,58,237,0.12)', color: '#6b7280' }
                   }
                 >
                   {d.charAt(0).toUpperCase() + d.slice(1)}
@@ -186,7 +186,7 @@ export default function QuizTab({
         </div>
 
         <div>
-          <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>Tipi di domanda</label>
+          <label className="text-xs font-semibold mb-2 block" style={{ color: '#6b7280' }}>Tipi di domanda</label>
           <div className="flex gap-2 flex-wrap">
             {(['multipla', 'vera_falsa', 'aperta'] as const).map((t) => (
               <button
@@ -196,7 +196,7 @@ export default function QuizTab({
                 style={
                   types.includes(t)
                     ? { background: `${accentColor}18`, borderColor: `${accentColor}50`, color: accentColor }
-                    : { background: '#111827', borderColor: 'rgba(255,255,255,0.08)', color: '#4a5568' }
+                    : { background: '#f1f0ff', borderColor: 'rgba(124,58,237,0.12)', color: '#9ca3af' }
                 }
               >
                 {t === 'multipla' ? '◉ Scelta multipla' : t === 'vera_falsa' ? '◎ Vero / Falso' : '✏ Risposta aperta'}
@@ -238,19 +238,19 @@ export default function QuizTab({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold" style={{ color: '#8899b0' }}>
+        <span className="text-xs font-semibold" style={{ color: '#6b7280' }}>
           Domanda {currentQ + 1} di {questions.length}
         </span>
         <button
           onClick={() => setPhase('setup')}
           className="text-xs px-2.5 py-1 rounded-lg transition-colors"
-          style={{ background: '#111827', color: '#4a5568', border: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ background: '#f1f0ff', color: '#9ca3af', border: '1px solid rgba(124,58,237,0.1)' }}
         >
           ✕ Esci
         </button>
       </div>
 
-      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+      <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(124,58,237,0.08)' }}>
         <motion.div
           className="h-full rounded-full"
           style={{ background: accentGradient }}
@@ -267,7 +267,7 @@ export default function QuizTab({
           exit={{ opacity: 0, x: -24 }}
           transition={{ duration: 0.22 }}
           className="rounded-2xl p-6 space-y-5"
-          style={{ background: '#0d1220', border: `1px solid ${accentColor}22` }}
+          style={{ background: '#ffffff', border: `1px solid ${accentColor}22`, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
         >
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -277,7 +277,7 @@ export default function QuizTab({
               >
                 {q.topic} · {q.type.replace('_', '/')} · {q.difficulty}
               </div>
-              <p className="text-base font-bold leading-snug" style={{ color: '#e2e8f0' }}>{q.text}</p>
+              <p className="text-base font-bold leading-snug" style={{ color: '#1e1b4b' }}>{q.text}</p>
             </div>
             <span
               className="text-xs font-bold px-2.5 py-1 rounded-lg shrink-0"
@@ -304,7 +304,7 @@ export default function QuizTab({
                       isCorrectOpt ? { background: 'rgba(74,222,128,0.12)', borderColor: 'rgba(74,222,128,0.4)', color: '#4ade80' }
                         : isWrongOpt ? { background: 'rgba(248,113,113,0.12)', borderColor: 'rgba(248,113,113,0.4)', color: '#f87171' }
                         : isSelected ? { background: `${accentColor}18`, borderColor: `${accentColor}50`, color: accentColor }
-                        : { background: '#111827', borderColor: 'rgba(255,255,255,0.07)', color: '#8899b0' }
+                        : { background: '#f1f0ff', borderColor: 'rgba(124,58,237,0.1)', color: '#6b7280' }
                     }
                   >
                     <span className="flex items-center gap-2">
@@ -334,9 +334,9 @@ export default function QuizTab({
               rows={4}
               className="w-full rounded-xl px-4 py-3 text-sm resize-none disabled:opacity-60"
               style={{
-                background: '#111827',
+                background: '#f8f7ff',
                 border: `1px solid ${accentColor}30`,
-                color: '#e2e8f0',
+                color: '#1e1b4b',
                 outline: 'none',
               }}
               onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; }}
@@ -364,7 +364,7 @@ export default function QuizTab({
                 </p>
               )}
               {q.type === 'aperta' && <p className="font-bold" style={{ color: '#60a5fa' }}>📖 Risposta modello:</p>}
-              <p style={{ color: '#8899b0' }}>{q.explanation}</p>
+              <p style={{ color: '#6b7280' }}>{q.explanation}</p>
             </motion.div>
           )}
 

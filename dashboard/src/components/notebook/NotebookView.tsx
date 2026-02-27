@@ -110,23 +110,23 @@ export default function NotebookView() {
       {/* ── ATMOSPHERIC BACKGROUND BLOBS ─────────────── */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
         <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute', top: '-10%', right: '-10%',
             width: '55vw', height: '55vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(168,85,247,0.18) 0%, transparent 70%)',
-            filter: 'blur(80px)',
+            background: 'radial-gradient(circle, rgba(124,58,237,0.1) 0%, transparent 70%)',
+            filter: 'blur(90px)',
           }}
         />
         <motion.div
-          animate={{ scale: [1, 1.07, 1], opacity: [0.3, 0.5, 0.3] }}
+          animate={{ scale: [1, 1.07, 1], opacity: [0.25, 0.4, 0.25] }}
           transition={{ duration: 13, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
           style={{
             position: 'absolute', bottom: '10%', left: '-8%',
             width: '50vw', height: '50vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)',
-            filter: 'blur(70px)',
+            background: 'radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
         <motion.div
@@ -135,8 +135,8 @@ export default function NotebookView() {
           style={{
             position: 'absolute', top: '40%', left: '30%',
             width: '40vw', height: '40vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, transparent 70%)',
-            filter: 'blur(80px)',
+            background: 'radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%)',
+            filter: 'blur(90px)',
           }}
         />
       </div>
@@ -155,7 +155,7 @@ export default function NotebookView() {
             <span className="tag">Notebook AI</span>
             <span
               className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase"
-              style={{ background: 'rgba(6,182,212,0.12)', color: '#67e8f9', border: '1px solid rgba(6,182,212,0.3)' }}
+              style={{ background: 'rgba(6,182,212,0.1)', color: '#0891b2', border: '1px solid rgba(6,182,212,0.25)' }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse inline-block" />
               Gemini AI attivo
@@ -163,15 +163,15 @@ export default function NotebookView() {
           </div>
           <h1 className="text-4xl sm:text-5xl font-black tracking-tight leading-[0.95] mb-3">
             <span style={{
-              background: 'linear-gradient(135deg, #f8fafc 0%, #c084fc 45%, #06b6d4 100%)',
+              background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 45%, #0891b2 100%)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
             }}>
               Genera materiali
             </span>
             <br />
-            <span style={{ color: '#94a3b8', fontSize: '0.7em', fontWeight: 700 }}>di studio con AI</span>
+            <span style={{ color: '#5b5694', fontSize: '0.7em', fontWeight: 700 }}>di studio con AI</span>
           </h1>
-          <p className="text-sm" style={{ color: '#475569' }}>
+          <p className="text-sm" style={{ color: '#6b7280' }}>
             Scegli una skill — Gemini creerà contenuti personalizzati in pochi secondi
           </p>
         </motion.div>
@@ -218,8 +218,8 @@ export default function NotebookView() {
                       ? `1px solid ${skill.glow}70`
                       : `1px solid ${skill.glow}35`,
                     boxShadow: isActive
-                      ? `0 0 50px ${skill.glow}55, 0 16px 48px rgba(0,0,0,0.5), inset 0 0 30px rgba(255,255,255,0.04)`
-                      : `0 4px 20px rgba(0,0,0,0.25)`,
+                      ? `0 0 50px ${skill.glow}55, 0 16px 48px rgba(0,0,0,0.12), inset 0 0 30px rgba(255,255,255,0.04)`
+                      : `0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)`,
                     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
                     minHeight: '200px',
                   }}
@@ -228,7 +228,7 @@ export default function NotebookView() {
                       const el = e.currentTarget as HTMLElement;
                       el.style.background = `linear-gradient(135deg, ${skill.c1}40 0%, ${skill.c2}28 60%, ${skill.c3}18 100%)`;
                       el.style.borderColor = `${skill.glow}60`;
-                      el.style.boxShadow = `0 8px 32px ${skill.glow}35, 0 16px 48px rgba(0,0,0,0.4)`;
+                      el.style.boxShadow = `0 8px 32px ${skill.glow}35, 0 8px 24px rgba(0,0,0,0.08)`;
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -236,7 +236,7 @@ export default function NotebookView() {
                       const el = e.currentTarget as HTMLElement;
                       el.style.background = `linear-gradient(135deg, ${skill.c1}22 0%, ${skill.c2}14 60%, ${skill.c3}0a 100%)`;
                       el.style.borderColor = `${skill.glow}35`;
-                      el.style.boxShadow = `0 4px 20px rgba(0,0,0,0.25)`;
+                      el.style.boxShadow = `0 2px 12px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)`;
                     }
                   }}
                 >
@@ -317,7 +317,7 @@ export default function NotebookView() {
                     <div className="text-center mt-auto">
                       <h3
                         className="font-extrabold text-sm leading-tight mb-1"
-                        style={{ color: isActive ? '#fff' : '#f1f5f9' }}
+                        style={{ color: isActive ? '#fff' : '#1e1b4b' }}
                       >
                         {skill.label}
                       </h3>
@@ -405,17 +405,17 @@ export default function NotebookView() {
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-4"
               style={{
-                background: 'radial-gradient(circle at 38% 32%, rgba(168,85,247,0.35), rgba(99,102,241,0.2) 50%, rgba(6,182,212,0.1) 100%)',
-                border: '1px solid rgba(168,85,247,0.3)',
-                boxShadow: '0 0 30px rgba(168,85,247,0.2)',
+                background: 'radial-gradient(circle at 38% 32%, rgba(124,58,237,0.18), rgba(99,102,241,0.1) 50%, rgba(6,182,212,0.05) 100%)',
+                border: '1px solid rgba(124,58,237,0.2)',
+                boxShadow: '0 0 20px rgba(124,58,237,0.1)',
               }}
             >
               ✨
             </motion.div>
-            <p className="text-sm font-bold mb-1" style={{ color: '#64748b' }}>
+            <p className="text-sm font-bold mb-1" style={{ color: '#5b5694' }}>
               Tocca una skill per iniziare
             </p>
-            <p className="text-xs" style={{ color: '#334155' }}>
+            <p className="text-xs" style={{ color: '#9ca3af' }}>
               Gemini AI genererà i contenuti in pochi secondi
             </p>
           </motion.div>

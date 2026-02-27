@@ -135,24 +135,24 @@ export default function HomeView({
       <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0 }}>
         {/* Violet — top-left */}
         <motion.div
-          animate={{ scale: [1, 1.12, 1], opacity: [0.55, 0.75, 0.55] }}
+          animate={{ scale: [1, 1.12, 1], opacity: [0.35, 0.55, 0.35] }}
           transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
           style={{
             position: 'absolute', top: '-18%', left: '-18%',
             width: '70vw', height: '70vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(168,85,247,0.22) 0%, rgba(139,92,246,0.1) 40%, transparent 70%)',
-            filter: 'blur(70px)',
+            background: 'radial-gradient(circle, rgba(139,92,246,0.12) 0%, rgba(124,58,237,0.05) 40%, transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
         {/* Cyan — bottom-right */}
         <motion.div
-          animate={{ scale: [1, 1.08, 1], opacity: [0.45, 0.65, 0.45] }}
+          animate={{ scale: [1, 1.08, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
           style={{
             position: 'absolute', bottom: '-22%', right: '-18%',
             width: '65vw', height: '65vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(6,182,212,0.18) 0%, rgba(14,165,233,0.08) 40%, transparent 70%)',
-            filter: 'blur(70px)',
+            background: 'radial-gradient(circle, rgba(6,182,212,0.1) 0%, rgba(14,165,233,0.04) 40%, transparent 70%)',
+            filter: 'blur(80px)',
           }}
         />
         {/* Pink — center */}
@@ -162,19 +162,19 @@ export default function HomeView({
           style={{
             position: 'absolute', top: '35%', right: '15%',
             width: '42vw', height: '42vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(236,72,153,0.12) 0%, transparent 70%)',
-            filter: 'blur(80px)',
+            background: 'radial-gradient(circle, rgba(236,72,153,0.07) 0%, transparent 70%)',
+            filter: 'blur(90px)',
           }}
         />
         {/* Green — bottom-left */}
         <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.3, 0.5, 0.3] }}
+          animate={{ scale: [1, 1.1, 1], opacity: [0.25, 0.4, 0.25] }}
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 4 }}
           style={{
             position: 'absolute', bottom: '5%', left: '5%',
             width: '35vw', height: '35vw', borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(16,185,129,0.14) 0%, transparent 70%)',
-            filter: 'blur(60px)',
+            background: 'radial-gradient(circle, rgba(16,185,129,0.08) 0%, transparent 70%)',
+            filter: 'blur(70px)',
           }}
         />
       </div>
@@ -201,10 +201,10 @@ export default function HomeView({
             <span
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold tracking-widest uppercase"
               style={{
-                background: 'rgba(168,85,247,0.12)',
-                color: '#e879f9',
-                border: '1px solid rgba(168,85,247,0.3)',
-                boxShadow: '0 0 20px rgba(168,85,247,0.15)',
+                background: 'rgba(124,58,237,0.12)',
+                color: '#7c3aed',
+                border: '1px solid rgba(124,58,237,0.25)',
+                boxShadow: '0 0 20px rgba(124,58,237,0.1)',
               }}
             >
               <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse inline-block" />
@@ -220,7 +220,7 @@ export default function HomeView({
               transition={{ delay: 0.3 }}
               className="block"
               style={{
-                background: 'linear-gradient(135deg, #f8fafc 0%, #c084fc 40%, #06b6d4 100%)',
+                background: 'linear-gradient(135deg, #4c1d95 0%, #7c3aed 40%, #0891b2 100%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
                 backgroundClip: 'text',
@@ -233,7 +233,7 @@ export default function HomeView({
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.42 }}
               className="block"
-              style={{ color: '#f1f5f9' }}
+              style={{ color: '#1e1b4b' }}
             >
               intelligente.
             </motion.span>
@@ -244,7 +244,7 @@ export default function HomeView({
             animate={{ opacity: 1 }}
             transition={{ delay: 0.55 }}
             className="text-lg max-w-md mx-auto"
-            style={{ color: '#64748b' }}
+            style={{ color: '#5b5694' }}
           >
             Il tuo assistente universitario AI — scegli una sezione per iniziare
           </motion.p>
@@ -287,14 +287,14 @@ export default function HomeView({
                   height: 'clamp(100px, 14vw, 160px)',
                   borderRadius: '50%',
                   background: `radial-gradient(circle at 38% 32%, ${orb.c1}f0 0%, ${orb.c2} 48%, ${orb.c3} 100%)`,
-                  boxShadow: `0 0 40px ${orb.glow}55, 0 0 80px ${orb.glow}22, 0 20px 40px rgba(0,0,0,0.4), inset 0 0 30px rgba(255,255,255,0.04)`,
+                  boxShadow: `0 0 40px ${orb.glow}55, 0 0 80px ${orb.glow}22, 0 12px 32px rgba(0,0,0,0.12), inset 0 0 30px rgba(255,255,255,0.04)`,
                   border: `1px solid ${orb.glow}35`,
                   cursor: 'pointer',
                   transition: 'box-shadow 0.25s ease',
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow =
-                    `0 0 60px ${orb.glow}80, 0 0 120px ${orb.glow}35, 0 24px 48px rgba(0,0,0,0.5), inset 0 0 40px rgba(255,255,255,0.06)`;
+                    `0 0 60px ${orb.glow}80, 0 0 120px ${orb.glow}35, 0 16px 40px rgba(0,0,0,0.15), inset 0 0 40px rgba(255,255,255,0.06)`;
                 }}
                 onMouseLeave={(e) => {
                   (e.currentTarget as HTMLElement).style.boxShadow =
@@ -339,13 +339,13 @@ export default function HomeView({
               <div className="text-center">
                 <p
                   className="font-extrabold text-sm sm:text-base leading-tight"
-                  style={{ color: '#f1f5f9' }}
+                  style={{ color: '#1e1b4b' }}
                 >
                   {orb.label}
                 </p>
                 <p
                   className="text-[10px] sm:text-xs mt-0.5 leading-snug hidden sm:block"
-                  style={{ color: '#475569' }}
+                  style={{ color: '#6b7280' }}
                 >
                   {orb.sub}
                 </p>
@@ -358,7 +358,7 @@ export default function HomeView({
         <div
           className="mb-10 h-px max-w-4xl mx-auto"
           style={{
-            background: 'linear-gradient(90deg, transparent, rgba(168,85,247,0.35), rgba(6,182,212,0.35), transparent)',
+            background: 'linear-gradient(90deg, transparent, rgba(124,58,237,0.2), rgba(6,182,212,0.2), transparent)',
           }}
         />
 
@@ -366,15 +366,15 @@ export default function HomeView({
         <div id="prof-section">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-black" style={{ color: '#f1f5f9' }}>
+              <h2 className="text-2xl font-black" style={{ color: '#1e1b4b' }}>
                 I tuoi Esami
                 {professors.length > 0 && (
-                  <span className="ml-2 text-base font-semibold" style={{ color: '#475569' }}>
+                  <span className="ml-2 text-base font-semibold" style={{ color: '#9ca3af' }}>
                     ({professors.length})
                   </span>
                 )}
               </h2>
-              <p className="text-sm mt-0.5" style={{ color: '#475569' }}>
+              <p className="text-sm mt-0.5" style={{ color: '#6b7280' }}>
                 {professors.length === 0
                   ? 'Aggiungi il tuo primo esame per iniziare'
                   : 'Seleziona un professore per chattare'}
@@ -388,7 +388,7 @@ export default function HomeView({
               style={{
                 background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
                 color: '#fff',
-                boxShadow: '0 4px 20px rgba(168,85,247,0.4)',
+                boxShadow: '0 4px 20px rgba(124,58,237,0.4)',
               }}
             >
               <Plus size={16} />
@@ -403,24 +403,24 @@ export default function HomeView({
               animate={{ opacity: 1, scale: 1 }}
               className="flex flex-col items-center justify-center py-20 text-center rounded-2xl"
               style={{
-                background: 'rgba(168,85,247,0.04)',
-                border: '1px dashed rgba(168,85,247,0.2)',
+                background: 'rgba(124,58,237,0.04)',
+                border: '1px dashed rgba(124,58,237,0.2)',
               }}
             >
               <div
                 className="w-20 h-20 rounded-2xl flex items-center justify-center text-4xl mb-5"
                 style={{
-                  background: 'rgba(168,85,247,0.1)',
-                  border: '1px solid rgba(168,85,247,0.25)',
-                  boxShadow: '0 0 30px rgba(168,85,247,0.15)',
+                  background: 'rgba(124,58,237,0.1)',
+                  border: '1px solid rgba(124,58,237,0.25)',
+                  boxShadow: '0 0 30px rgba(124,58,237,0.12)',
                 }}
               >
                 🎓
               </div>
-              <h3 className="text-xl font-black mb-2" style={{ color: '#f1f5f9' }}>
+              <h3 className="text-xl font-black mb-2" style={{ color: '#1e1b4b' }}>
                 Nessun esame ancora
               </h3>
-              <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: '#475569' }}>
+              <p className="text-sm mb-8 max-w-xs leading-relaxed" style={{ color: '#6b7280' }}>
                 Crea il tuo primo professore AI e inizia a studiare in modo intelligente
               </p>
               <motion.button
@@ -431,7 +431,7 @@ export default function HomeView({
                 style={{
                   background: 'linear-gradient(135deg, #7c3aed, #a855f7)',
                   color: '#fff',
-                  boxShadow: '0 4px 24px rgba(168,85,247,0.45)',
+                  boxShadow: '0 4px 24px rgba(124,58,237,0.45)',
                 }}
               >
                 <Plus size={16} />
@@ -487,20 +487,20 @@ export default function HomeView({
                       whileTap={{ scale: 0.99 }}
                       className="cursor-pointer rounded-2xl overflow-hidden relative"
                       style={{
-                        background: 'rgba(17,24,39,0.85)',
-                        border: `1px solid rgba(255,255,255,0.06)`,
-                        backdropFilter: 'blur(12px)',
+                        background: '#ffffff',
+                        border: `1px solid rgba(124,58,237,0.1)`,
+                        boxShadow: '0 2px 12px rgba(124,58,237,0.06)',
                         transition: 'all 0.25s ease',
                       }}
                       onMouseEnter={(e) => {
                         const el = e.currentTarget as HTMLElement;
                         el.style.border = `1px solid ${color}40`;
-                        el.style.boxShadow = `0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px ${color}20`;
+                        el.style.boxShadow = `0 8px 32px rgba(0,0,0,0.08), 0 0 0 1px ${color}20`;
                       }}
                       onMouseLeave={(e) => {
                         const el = e.currentTarget as HTMLElement;
-                        el.style.border = `1px solid rgba(255,255,255,0.06)`;
-                        el.style.boxShadow = 'none';
+                        el.style.border = `1px solid rgba(124,58,237,0.1)`;
+                        el.style.boxShadow = '0 2px 12px rgba(124,58,237,0.06)';
                       }}
                     >
                       {/* Top color strip */}
@@ -540,7 +540,7 @@ export default function HomeView({
                             {emoji}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-extrabold text-sm tracking-tight truncate" style={{ color: '#f1f5f9' }}>
+                            <h3 className="font-extrabold text-sm tracking-tight truncate" style={{ color: '#1e1b4b' }}>
                               Prof. {prof.name}
                             </h3>
                             <p className="text-xs font-semibold mt-0.5 truncate" style={{ color }}>
@@ -555,7 +555,7 @@ export default function HomeView({
                                     width: i < (prof.difficulty || 3) ? 14 : 10,
                                     background: i < (prof.difficulty || 3)
                                       ? `linear-gradient(90deg,${color},${color}66)`
-                                      : 'rgba(255,255,255,0.06)',
+                                      : 'rgba(124,58,237,0.08)',
                                   }}
                                 />
                               ))}
@@ -571,23 +571,23 @@ export default function HomeView({
                           <Clock size={11} style={{ color: daysColor }} />
                           <span className="text-xs font-bold" style={{ color: daysColor }}>{daysLabel}</span>
                           {daysLeft !== null && daysLeft > 0 && (
-                            <span className="text-[10px] ml-auto" style={{ color: '#334155' }}>all&apos;esame</span>
+                            <span className="text-[10px] ml-auto" style={{ color: '#9ca3af' }}>all&apos;esame</span>
                           )}
                         </div>
 
                         {/* Stats */}
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="flex items-center gap-1" style={{ color: '#334155' }}>
+                          <div className="flex items-center gap-1" style={{ color: '#9ca3af' }}>
                             <MessageCircle size={10} />
                             <span className="text-[10px] font-semibold">{chatCount}</span>
                           </div>
-                          <div className="flex items-center gap-1" style={{ color: '#334155' }}>
+                          <div className="flex items-center gap-1" style={{ color: '#9ca3af' }}>
                             <Target size={10} />
                             <span className="text-[10px] font-semibold">{prof.targetGrade || 28}/30</span>
                           </div>
                           <div
                             className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-lg"
-                            style={{ background: 'rgba(255,255,255,0.05)', color: '#64748b' }}
+                            style={{ background: 'rgba(124,58,237,0.06)', color: '#6b7280' }}
                           >
                             {prof.examFormat}
                           </div>
@@ -619,28 +619,28 @@ export default function HomeView({
                   whileHover={{ y: -4 }}
                   whileTap={{ scale: 0.99 }}
                   className="w-full min-h-[240px] rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-3 transition-all duration-300 group"
-                  style={{ borderColor: 'rgba(168,85,247,0.15)' }}
+                  style={{ borderColor: 'rgba(124,58,237,0.15)' }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(168,85,247,0.4)';
-                    e.currentTarget.style.background = 'rgba(168,85,247,0.04)';
+                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.4)';
+                    e.currentTarget.style.background = 'rgba(124,58,237,0.04)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(168,85,247,0.15)';
+                    e.currentTarget.style.borderColor = 'rgba(124,58,237,0.15)';
                     e.currentTarget.style.background = 'transparent';
                   }}
                 >
                   <div
                     className="w-12 h-12 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:rotate-3"
                     style={{
-                      background: 'rgba(168,85,247,0.1)',
-                      border: '1px solid rgba(168,85,247,0.25)',
+                      background: 'rgba(124,58,237,0.1)',
+                      border: '1px solid rgba(124,58,237,0.25)',
                     }}
                   >
                     <Plus size={20} style={{ color: '#a855f7' }} />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm font-bold" style={{ color: '#64748b' }}>Aggiungi esame</p>
-                    <p className="text-xs mt-0.5" style={{ color: '#334155' }}>Nuovo professore AI</p>
+                    <p className="text-sm font-bold" style={{ color: '#5b5694' }}>Aggiungi esame</p>
+                    <p className="text-xs mt-0.5" style={{ color: '#9ca3af' }}>Nuovo professore AI</p>
                   </div>
                 </motion.button>
               </motion.div>

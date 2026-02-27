@@ -51,13 +51,14 @@ export default function Sidebar({
       transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
       className="fixed left-0 top-0 h-screen z-40 flex flex-col"
       style={{
-        background: 'rgba(6,4,16,0.92)',
+        background: 'rgba(255,255,255,0.96)',
         backdropFilter: 'blur(20px)',
-        borderRight: '1px solid rgba(168,85,247,0.12)',
+        borderRight: '1px solid rgba(124,58,237,0.15)',
+        boxShadow: '2px 0 20px rgba(124,58,237,0.06)',
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-3.5 h-14 border-b flex-shrink-0" style={{ borderColor: 'rgba(168,85,247,0.12)' }}>
+      <div className="flex items-center gap-3 px-3.5 h-14 border-b flex-shrink-0" style={{ borderColor: 'rgba(124,58,237,0.12)' }}>
         <div className="relative flex-shrink-0">
           <div
             className="w-9 h-9 rounded-xl flex items-center justify-center text-lg font-black"
@@ -81,7 +82,7 @@ export default function Sidebar({
               transition={{ duration: 0.15 }}
             >
               <h1 className="text-sm font-extrabold tracking-tight gradient-text leading-none">StudyAI</h1>
-              <p className="text-[9px] mt-0.5" style={{ color: '#4a5568' }}>Piano studio intelligente</p>
+              <p className="text-[9px] mt-0.5" style={{ color: '#9ca3af' }}>Piano studio intelligente</p>
             </motion.div>
           )}
         </AnimatePresence>
@@ -96,11 +97,11 @@ export default function Sidebar({
           className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 relative"
           style={{
             background: currentView === 'home' || currentView === 'create-professor'
-              ? 'rgba(168,85,247,0.12)'
+              ? 'rgba(124,58,237,0.12)'
               : 'transparent',
             color: currentView === 'home' || currentView === 'create-professor'
-              ? '#d8b4fe'
-              : '#94a3b8',
+              ? '#7c3aed'
+              : '#6b7280',
           }}
         >
           {(currentView === 'home' || currentView === 'create-professor') && (
@@ -114,7 +115,7 @@ export default function Sidebar({
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
             style={{
-              background: currentView === 'home' ? 'rgba(168,85,247,0.18)' : 'rgba(255,255,255,0.04)',
+              background: currentView === 'home' ? 'rgba(124,58,237,0.1)' : 'rgba(124,58,237,0.04)',
             }}
           >
             <Home size={15} />
@@ -144,7 +145,7 @@ export default function Sidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="text-[9px] font-bold uppercase tracking-[0.12em] px-2 pt-3 pb-1.5"
-              style={{ color: '#4a5568' }}
+              style={{ color: '#9ca3af' }}
             >
               Professori
             </motion.p>
@@ -166,7 +167,7 @@ export default function Sidebar({
               className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 relative"
               style={{
                 background: isActive ? `${color}14` : 'transparent',
-                color: isActive ? color : '#8899b0',
+                color: isActive ? color : '#6b7280',
               }}
             >
               {isActive && (
@@ -195,10 +196,10 @@ export default function Sidebar({
                     exit={{ opacity: 0 }}
                     className="flex-1 min-w-0 text-left"
                   >
-                    <p className="text-xs font-semibold truncate leading-tight" style={{ color: isActive ? color : '#e2e8f0' }}>
+                    <p className="text-xs font-semibold truncate leading-tight" style={{ color: isActive ? color : '#1e1b4b' }}>
                       {prof.name}
                     </p>
-                    <p className="text-[10px] truncate" style={{ color: '#4a5568' }}>
+                    <p className="text-[10px] truncate" style={{ color: '#9ca3af' }}>
                       {prof.subject || prof.department || 'Materia'}
                     </p>
                   </motion.div>
@@ -214,11 +215,11 @@ export default function Sidebar({
           whileHover={{ x: 2 }}
           whileTap={{ scale: 0.98 }}
           className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 group"
-          style={{ color: '#4a5568' }}
+          style={{ color: '#9ca3af' }}
         >
           <div
             className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 border border-dashed transition-colors group-hover:border-green-500/40"
-            style={{ background: 'rgba(255,255,255,0.03)', borderColor: 'rgba(16,185,129,0.2)' }}
+            style={{ background: 'rgba(124,58,237,0.04)', borderColor: 'rgba(16,185,129,0.25)' }}
           >
             <Plus size={13} className="group-hover:text-green-400 transition-colors" />
           </div>
@@ -237,7 +238,7 @@ export default function Sidebar({
         </motion.button>
 
         {/* Divider */}
-        <div className="mx-2 my-2 border-t" style={{ borderColor: 'rgba(168,85,247,0.1)' }} />
+        <div className="mx-2 my-2 border-t" style={{ borderColor: 'rgba(124,58,237,0.1)' }} />
 
         {/* Tools section */}
         <AnimatePresence>
@@ -247,7 +248,7 @@ export default function Sidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="text-[9px] font-bold uppercase tracking-[0.12em] px-2 pt-1 pb-1.5"
-              style={{ color: '#4a5568' }}
+              style={{ color: '#9ca3af' }}
             >
               Strumenti
             </motion.p>
@@ -265,8 +266,8 @@ export default function Sidebar({
               whileTap={{ scale: 0.98 }}
               className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl transition-all duration-200 relative"
               style={{
-                background: isActive ? 'rgba(168,85,247,0.12)' : 'transparent',
-                color: isActive ? '#d8b4fe' : '#94a3b8',
+                background: isActive ? 'rgba(124,58,237,0.12)' : 'transparent',
+                color: isActive ? '#7c3aed' : '#6b7280',
               }}
             >
               {isActive && (
@@ -279,7 +280,7 @@ export default function Sidebar({
               )}
               <div
                 className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-                style={{ background: isActive ? 'rgba(168,85,247,0.18)' : 'rgba(255,255,255,0.04)' }}
+                style={{ background: isActive ? 'rgba(124,58,237,0.1)' : 'rgba(124,58,237,0.04)' }}
               >
                 <Icon size={14} />
               </div>
@@ -292,7 +293,7 @@ export default function Sidebar({
                     className="flex flex-col items-start"
                   >
                     <span className="text-xs font-semibold leading-tight">{item.label}</span>
-                    <span className="text-[9px]" style={{ color: '#4a5568' }}>{item.description}</span>
+                    <span className="text-[9px]" style={{ color: '#9ca3af' }}>{item.description}</span>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -302,7 +303,7 @@ export default function Sidebar({
       </div>
 
       {/* Bottom footer */}
-      <div className="p-2 border-t flex-shrink-0" style={{ borderColor: 'rgba(168,85,247,0.1)' }}>
+      <div className="p-2 border-t flex-shrink-0" style={{ borderColor: 'rgba(124,58,237,0.1)' }}>
         <AnimatePresence>
           {sidebarOpen && studyStreak > 0 && (
             <motion.div
@@ -310,11 +311,11 @@ export default function Sidebar({
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="mb-2 px-3 py-2 rounded-lg"
-              style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(168,85,247,0.18)' }}
+              style={{ background: 'rgba(168,85,247,0.08)', border: '1px solid rgba(124,58,237,0.1)' }}
             >
               <div className="flex items-center gap-1.5">
                 <Zap size={10} style={{ color: '#fbbf24' }} />
-                <span className="text-[10px] font-bold" style={{ color: '#e2e8f0' }}>
+                <span className="text-[10px] font-bold" style={{ color: '#1e1b4b' }}>
                   {studyStreak} giorni streak
                 </span>
               </div>
@@ -324,16 +325,16 @@ export default function Sidebar({
 
         {!sidebarOpen && (
           <div className="flex justify-center mb-2">
-            <GraduationCap size={14} style={{ color: '#4a5568' }} />
+            <GraduationCap size={14} style={{ color: '#9ca3af' }} />
           </div>
         )}
 
         <button
           onClick={onToggle}
           className="w-full flex items-center justify-center p-2 rounded-lg transition-colors"
-          style={{ color: '#4a5568' }}
-          onMouseEnter={e => (e.currentTarget.style.color = '#e2e8f0')}
-          onMouseLeave={e => (e.currentTarget.style.color = '#4a5568')}
+          style={{ color: '#9ca3af' }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#1e1b4b')}
+          onMouseLeave={e => (e.currentTarget.style.color = '#9ca3af')}
         >
           {sidebarOpen ? <ChevronLeft size={15} /> : <ChevronRight size={15} />}
         </button>

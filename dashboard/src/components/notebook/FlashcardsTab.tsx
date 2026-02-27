@@ -62,7 +62,7 @@ export default function FlashcardsTab({
       {/* Config form */}
       <div
         className="rounded-2xl p-6 space-y-5"
-        style={{ background: '#0d1220', border: `1px solid ${accentColor}28` }}
+        style={{ background: '#ffffff', border: `1px solid ${accentColor}28`, boxShadow: '0 2px 12px rgba(0,0,0,0.05)' }}
       >
         <div>
           <label className="text-xs font-bold uppercase tracking-widest mb-2 block" style={{ color: accentColor }}>
@@ -76,9 +76,9 @@ export default function FlashcardsTab({
             placeholder="es. Diritto dei Contratti, Macroeconomia, Calcolo integrale..."
             className="w-full rounded-xl px-4 py-3.5 text-sm"
             style={{
-              background: '#111827',
+              background: '#f8f7ff',
               border: `1px solid ${accentColor}30`,
-              color: '#e2e8f0',
+              color: '#1e1b4b',
               outline: 'none',
             }}
             onFocus={(e) => { e.currentTarget.style.borderColor = accentColor; e.currentTarget.style.boxShadow = `0 0 0 3px ${accentColor}18`; }}
@@ -88,7 +88,7 @@ export default function FlashcardsTab({
 
         <div className="flex gap-5 flex-wrap items-end">
           <div className="flex-1 min-w-[160px]">
-            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#6b7280' }}>
               Carte: <span style={{ color: accentColor }} className="font-bold">{count}</span>
             </label>
             <input
@@ -98,13 +98,13 @@ export default function FlashcardsTab({
               className="w-full cursor-pointer"
               style={{ accentColor }}
             />
-            <div className="flex justify-between text-[10px] mt-1" style={{ color: '#4a5568' }}>
+            <div className="flex justify-between text-[10px] mt-1" style={{ color: '#9ca3af' }}>
               <span>5</span><span>25</span>
             </div>
           </div>
 
           <div>
-            <label className="text-xs font-semibold mb-2 block" style={{ color: '#8899b0' }}>Difficoltà</label>
+            <label className="text-xs font-semibold mb-2 block" style={{ color: '#6b7280' }}>Difficoltà</label>
             <div className="flex gap-1.5">
               {(['base', 'medio', 'avanzato'] as const).map((d) => (
                 <button
@@ -114,7 +114,7 @@ export default function FlashcardsTab({
                   style={
                     difficulty === d
                       ? { background: difficultyColors[d], color: '#000', boxShadow: `0 2px 12px ${difficultyColors[d]}55` }
-                      : { background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }
+                      : { background: '#f1f0ff', border: '1px solid rgba(124,58,237,0.12)', color: '#6b7280' }
                   }
                 >
                   {d.charAt(0).toUpperCase() + d.slice(1)}
@@ -158,12 +158,12 @@ export default function FlashcardsTab({
                 <XCircle size={13} /> {unknownCount} da rivedere
               </span>
             </div>
-            <span className="text-sm font-bold" style={{ color: '#e2e8f0' }}>
-              {currentIndex + 1} <span style={{ color: '#4a5568' }}>/ {flashcards.length}</span>
+            <span className="text-sm font-bold" style={{ color: '#1e1b4b' }}>
+              {currentIndex + 1} <span style={{ color: '#9ca3af' }}>/ {flashcards.length}</span>
             </span>
           </div>
 
-          <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
+          <div className="h-1 rounded-full overflow-hidden" style={{ background: 'rgba(124,58,237,0.08)' }}>
             <motion.div
               className="h-full rounded-full"
               style={{ background: accentGradient }}
@@ -188,8 +188,9 @@ export default function FlashcardsTab({
               <div
                 className="absolute inset-0 flex flex-col items-center justify-center text-center rounded-2xl p-8"
                 style={{
-                  background: '#111827',
+                  background: '#ffffff',
                   border: `1px solid ${accentColor}22`,
+                  boxShadow: `0 4px 20px rgba(0,0,0,0.07)`,
                   backfaceVisibility: 'hidden',
                   WebkitBackfaceVisibility: 'hidden',
                 }}
@@ -200,10 +201,10 @@ export default function FlashcardsTab({
                 >
                   {currentCard.topic} · {currentCard.difficulty}
                 </div>
-                <p className="text-xl font-bold leading-relaxed" style={{ color: '#e2e8f0' }}>
+                <p className="text-xl font-bold leading-relaxed" style={{ color: '#1e1b4b' }}>
                   {currentCard.front}
                 </p>
-                <p className="text-xs mt-6 flex items-center gap-1.5" style={{ color: '#4a5568' }}>
+                <p className="text-xs mt-6 flex items-center gap-1.5" style={{ color: '#9ca3af' }}>
                   <RotateCcw size={11} /> Tocca per vedere la risposta
                 </p>
               </div>
@@ -226,11 +227,11 @@ export default function FlashcardsTab({
                 >
                   Risposta
                 </div>
-                <p className="text-lg leading-relaxed font-medium" style={{ color: '#e2e8f0' }}>
+                <p className="text-lg leading-relaxed font-medium" style={{ color: '#1e1b4b' }}>
                   {currentCard.back}
                 </p>
                 {currentCard.hint && (
-                  <p className="text-xs mt-5 italic px-4 py-2 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)', color: '#8899b0' }}>
+                  <p className="text-xs mt-5 italic px-4 py-2 rounded-xl" style={{ background: 'rgba(124,58,237,0.06)', color: '#6b7280' }}>
                     💡 {currentCard.hint}
                   </p>
                 )}
@@ -279,7 +280,7 @@ export default function FlashcardsTab({
                   onClick={goPrev}
                   disabled={currentIndex === 0}
                   className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-25 disabled:cursor-not-allowed"
-                  style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }}
+                  style={{ background: '#f1f0ff', border: '1px solid rgba(124,58,237,0.12)', color: '#6b7280' }}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -300,7 +301,7 @@ export default function FlashcardsTab({
                   onClick={goNext}
                   disabled={currentIndex === flashcards.length - 1}
                   className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-semibold disabled:opacity-25 disabled:cursor-not-allowed"
-                  style={{ background: '#111827', border: '1px solid rgba(255,255,255,0.08)', color: '#8899b0' }}
+                  style={{ background: '#f1f0ff', border: '1px solid rgba(124,58,237,0.12)', color: '#6b7280' }}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -327,7 +328,7 @@ export default function FlashcardsTab({
                       status === 'known' ? '#4ade80'
                         : status === 'unknown' ? '#f87171'
                         : i === currentIndex ? accentColor
-                        : 'rgba(255,255,255,0.08)',
+                        : 'rgba(124,58,237,0.1)',
                     boxShadow: i === currentIndex ? `0 0 8px ${accentColor}` : 'none',
                   }}
                 />
