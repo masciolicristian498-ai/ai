@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# legacy dashboard subdirectory artifacts
+dashboard/.next/
+dashboard/node_modules/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
