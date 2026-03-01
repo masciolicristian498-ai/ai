@@ -11,9 +11,10 @@ import StudyPlanView from '@/components/study-plan/StudyPlanView';
 import ExamSimulatorView from '@/components/exam-simulator/ExamSimulatorView';
 import ProgressView from '@/components/progress/ProgressView';
 import NotebookView from '@/components/notebook/NotebookView';
+import OnboardingView from '@/components/onboarding/OnboardingView';
 import { useAppStore } from '@/store/useStore';
 import { generateStudyPlan, generateExamSimulation } from '@/lib/algorithm';
-import type { Professor } from '@/types';
+import type { OnboardingData, Professor } from '@/types';
 
 const pageVariants = {
   initial: { opacity: 0, y: 16, scale: 0.99 },
@@ -77,6 +78,19 @@ export default function Home() {
   );
 
   const navigate = useCallback((view: string) => setView(view as import('@/store/useStore').AppView), [setView]);
+
+  const handleOnboardingComplete = useCallback(
+    (data: OnboardingData) => {
+      setOnboardingData(data);
+      const professor = selectedProfessor ?? state.professors[0] ?? null;
+      if (professor) {
+        const plan = generateStudyPlan(data, professor, state.materials);
+        setStudyPlan(plan);
+      }
+      setView('study-plan');
+    },
+    [setOnboardingData, selectedProfessor, state.professors, state.materials, setStudyPlan, setView]
+  );
 
   const currentPlan = useMemo(
     () => state.studyPlans[state.studyPlans.length - 1] || null,
@@ -152,6 +166,14 @@ export default function Home() {
             professors={state.professors}
             simulations={state.simulations}
             onStartSimulation={handleStartSimulation}
+            onNavigate={navigate}
+          />
+        );
+
+      case 'onboarding':
+        return (
+          <OnboardingView
+            onComplete={handleOnboardingComplete}
             onNavigate={navigate}
           />
         );
